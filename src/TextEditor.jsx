@@ -3,7 +3,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import './TextEditor.css';
 //import './mycontent.css';
 
-export default function TextEditor() {
+export default function TextEditor({note, ...props}) {
 
   const editorRef = useRef(null);
   
@@ -13,15 +13,18 @@ export default function TextEditor() {
     }
   };
 
+  function handleEditorChange(content){
+    console.log(content);
+  }
 
   return (
     <div className='h-full overflow-hidden'>
       <Editor
         id="editor"
         onInit={(evt, editor) => editorRef.current = editor}
-        initialValue="<p>
-        This is the initial content of the editor. Some <b>more</b> <i>text</i> could also go in here...
-        </p>"
+        onEditorChange={handleEditorChange}
+        initialValue={note?.text}
+        //"<p>This is the initial content of the editor. Some <b>more</b> <i>text</i> could also go in here...</p>"
         init={{
           height: 500,
           menubar: false,

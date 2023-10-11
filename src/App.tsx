@@ -1,12 +1,21 @@
-import React , {useEffect} from 'react';
+import React , {useEffect, useState} from 'react';
 import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import LoginButton from './LoginButton';
 import TextEditor from './TextEditor';
+import {getUserNotes, createNote} from './api/userAPI';
+
+type Note = {
+  _id : string,
+  title: string,
+  text: string,
+}
 
 function App() {
 
   const { user, isAuthenticated, isLoading, logout } = useAuth0();
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [workingNote, setWorkingNote] = useState<Note>();
 
   useEffect(()=>{
     if(user){
@@ -38,6 +47,7 @@ function App() {
           Note Title
         </div>
         <TextEditor />
+        <TextEditor note={workingNote} />
         </div>
       </div>
     </div>
