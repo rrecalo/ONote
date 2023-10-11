@@ -21,3 +21,8 @@ export async function updateNote(note : Note){
     let endpoint = "/updateNote";
     return axios.put(BASE_URL + endpoint, {title : note.title, _id: note._id, text: note.text}).then((response) => {return(response)});
 }
+
+export async function deleteNote(note : Note, email: string | undefined){
+    let endpoint = "/deleteNote";
+    return axios.delete(BASE_URL + endpoint, {params:{_id: note._id, email : email}}).then((response) => {return(response)});
+}
