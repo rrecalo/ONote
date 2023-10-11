@@ -1,10 +1,29 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {AiOutlineFileText, AiOutlinePlus} from 'react-icons/ai';
 
 const Sidebar = ({initializeNewNote, renderNoteList, newNoteCooldown, ...props}) => {
 
   const [isHoveringAdd, setIsHoveringAdd] = useState(false);
+  const [confirmAdd, setConfirmAdd] = useState(false);
+  
+  useEffect(()=>{
+    if(confirmAdd){
+      const confirmAddTimeout = setTimeout(()=>{
+        setConfirmAdd(false)
+      }, 2000);
+      return () => clearInterval(confirmAddTimeout);
+    }
+  },[confirmAdd]);
 
+  function handleNewNoteClick(event){
+    event.preventDefault();
+    if(!confirmAdd){
+      setConfirmAdd(true);
+    }
+    else{
+      initializeNewNote();
+    }
+  }
 
   return (
     <div id="sidebar" className='w-1/6 h-full bg-stone-50 flex flex-col justify-start items-center pt-10'>
@@ -34,15 +53,15 @@ const Sidebar = ({initializeNewNote, renderNoteList, newNoteCooldown, ...props})
             renderNoteList()
           }
           </div>
-          <div onClick={initializeNewNote} 
+          <div onClick={handleNewNoteClick} 
             onMouseEnter={() => setIsHoveringAdd(true)}
-            onMouseLeave={() => setIsHoveringAdd(false)}
+            onMouseLeave={() => {setIsHoveringAdd(false); setConfirmAdd(false)}}
             className={`flex h-[20%] w-[100%] p-5 justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
              {
-              isHoveringAdd ? 
-              <AiOutlinePlus/>
-              : 
-              <></>
+              isHoveringAdd  && !newNoteCooldown  ? 
+                <AiOutlinePlus/>
+                : 
+                <></>
             }
           </div>
         </div>
