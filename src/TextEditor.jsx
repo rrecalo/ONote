@@ -53,8 +53,9 @@ export default function TextEditor({noteId, getNoteById, updateNoteContent, ...p
           'alignright alignjustify | bullist numlist outdent indent | ' +
           'removeformat | help',
           //content_style: 'body { font-family: Lato; font-size:14px; font-weight:200; }',
-          content_css: "/mycontent.css"
+          content_css: "/mycontent.css",
           //background-color: #a8a29e;
+          placeholder: "Type some text here...",
         }}
       />
       <button onClick={log}>Log editor content</button>
