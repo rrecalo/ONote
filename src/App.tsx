@@ -6,7 +6,7 @@ import TextEditor from './TextEditor';
 import {getUserNotes, createNote, deleteNote} from './api/userAPI';
 import { Note } from './types/Note'
 import { updateNote } from './api/userAPI';
-import {AiOutlineCheck} from 'react-icons/ai';
+import {AiOutlineCheck, AiFillDelete} from 'react-icons/ai';
 
 function App() {
 
@@ -202,21 +202,19 @@ function App() {
       </div>
       </div>
       <div className='w-full p-2 flex flex-col h-full'>
-        <div className='flex w-full justify-start items-center gap-3'>
+        <div className='flex w-full justify-between items-center gap-3'>
         <input className='text-3xl pb-2 outline-none w-3/4 max-w-[600px]' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}/>
         {
         confirmTitle ?
         <button className='flex hover:bg-stone-200 px-2 py-1 rounded-lg content-center items-center' onClick={performTitleChange}>
           <AiOutlineCheck /> confirm
         </button>
-        
-        : <></>
+        : 
+        <></>
         }
-        {/* className={`cursor-pointer bg-stone-200 p-1 rounded-md" + ${workingNote?._id === note._id ? 'bg-stone-300' : 'bg-stone-200'}`} */}
-        {/* div className={`text-white ${isActive ? 'bg-blue-500' : 'bg-red-500'}`} */}
     
-        <button className={` hover:text-white px-2 py-1 rounded-md ${disableDelete ? 'hover:bg-stone-300' : 'hover:bg-red-500'}`} onClick={handleDeleteNote} disabled={disableDelete}>
-          Delete
+        <button className={`text-lg hover:text-white px-2 py-2 rounded-md ${disableDelete ? 'hover:bg-stone-300' : 'hover:bg-red-500'}`} onClick={handleDeleteNote} disabled={disableDelete}>
+          <AiFillDelete />
         </button>
         </div>
         <TextEditor noteId={workingNote?._id} getNoteById={getNoteById} updateNoteContent={updateNoteContent}/>
