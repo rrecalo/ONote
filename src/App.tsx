@@ -6,7 +6,9 @@ import TextEditor from './TextEditor';
 import {getUserNotes, createNote, deleteNote} from './api/userAPI';
 import { Note } from './types/Note'
 import { updateNote } from './api/userAPI';
-import {AiOutlineCheck, AiFillDelete} from 'react-icons/ai';
+import {AiOutlineCheck, AiFillDelete, AiOutlineFileText, AiOutlinePlus} from 'react-icons/ai';
+import {BsDot} from 'react-icons/bs';
+import Sidebar from './Sidebar';
 
 function App() {
 
@@ -114,6 +116,7 @@ function App() {
   //for creating a new note in the database
   //will also refresh the note list
   function initializeNewNote(){
+    if(newNoteCooldown) return;
 
     if(user?.email){
       console.log("New note!");
@@ -145,7 +148,20 @@ function App() {
     return (
       notes?.map(note => 
         //{`text-white ${true?'text-green-500' : 'text-red-500'`}
-        (<div className={`cursor-pointer bg-stone-200 p-1 rounded-md" + ${workingNote?._id === note._id ? 'bg-stone-300' : 'bg-stone-200'}`} onClick={()=>openNote(note?._id)} key={note?._id}>{note?.title}</div>)
+        (
+        <div className={`flex flex-row justify-start items-center pl-5 w-full cursor-pointer
+        font-verylight text-stone-900
+        " + ${workingNote?._id === note._id ? 'bg-stone-200' : 'bg-transparent'}`} 
+        onClick={()=>openNote(note?._id)}
+        key={note?._id}
+        >
+          <div>
+            <BsDot className='w-5 h-5 text-stone-900'/>
+          </div>
+          <div>
+            {note?.title}
+          </div>
+        </div>)
         )
     )
   }
@@ -178,47 +194,28 @@ function App() {
     <div className="App">
       
       <div className='flex flex-row justify-start items-start w-full h-[100vh]'>
-      <div id="sidebar" className='w-1/6 h-full bg-stone-100 flex flex-col justify-start items-center'>
-      {
-      !isAuthenticated ? <LoginButton /> : 
-      <div id="logout_functions" className="p-2">
-      <div className='text-base pb-4 font-semibold'>Logged in</div>
-      <div className='text-base cursor-pointer text-center bg-stone-200 hover:bg-stone-300' onClick={() => 
-        logout(
-          { 
-            logoutParams: {returnTo: window.location.origin}
+
+        <Sidebar initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown}/>
+
+        <div className='w-full p-2 flex flex-col h-full '>
+          <div className='flex w-full justify-between items-center gap-3 pe-5 bg-stone-50'>
+          <input className='text-3xl py-1 outline-none w-3/4 max-w-[600px] text-stone-800 bg-stone-50' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}/>
+          {
+          confirmTitle ?
+          <button className='flex hover:bg-stone-200 px-2 py-1 rounded-lg content-center items-center' onClick={performTitleChange}>
+            <AiOutlineCheck /> confirm
+          </button>
+          : 
+          <></>
           }
-          )
-        }>Logout?</div>
-      </div>
-      }
-      <button disabled={newNoteCooldown} onClick={initializeNewNote} className='hover:bg-stone-300 bg-stone-200 text-sm rounded-lg p-2'>
-        Make a New Note
-      </button>
-      <div className='flex flex-col justify-center items-center gap-2 my-3'>
-      {
-        renderNoteList()
-      }
-      </div>
-      </div>
-      <div className='w-full p-2 flex flex-col h-full'>
-        <div className='flex w-full justify-between items-center gap-3 pe-5'>
-        <input className='text-3xl pb-2 outline-none w-3/4 max-w-[600px]' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}/>
-        {
-        confirmTitle ?
-        <button className='flex hover:bg-stone-200 px-2 py-1 rounded-lg content-center items-center' onClick={performTitleChange}>
-          <AiOutlineCheck /> confirm
-        </button>
-        : 
-        <></>
-        }
-    
-        <button className={`text-lg hover:text-white px-2 py-2 rounded-md ${disableDelete ? 'hover:bg-stone-300' : 'hover:bg-red-500'}`} onClick={handleDeleteNote} disabled={disableDelete}>
-          <AiFillDelete />
-        </button>
-        </div>
-        <TextEditor noteId={workingNote?._id} getNoteById={getNoteById} updateNoteContent={updateNoteContent}/>
-        </div>
+      
+          <button className={`text-lg hover:text-white px-2 py-2 rounded-md ${disableDelete ? 'hover:bg-stone-300' : 'hover:bg-red-500'}`} onClick={handleDeleteNote} disabled={disableDelete}>
+            <AiFillDelete />
+          </button>
+          </div>
+            <TextEditor noteId={workingNote?._id} getNoteById={getNoteById} updateNoteContent={updateNoteContent}/>
+          </div>
+
       </div>
     </div>
   );
