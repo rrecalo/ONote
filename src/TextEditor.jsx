@@ -1,20 +1,33 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect} from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import './TextEditor.css';
 //import './mycontent.css';
 
-export default function TextEditor({note, ...props}) {
+export default function TextEditor({noteId, getNoteById, updateNoteContent, ...props}) {
 
   const editorRef = useRef(null);
   
   const log = () => {
     if (editorRef.current) {
-      console.log(editorRef.current.getContent());
     }
   };
 
-  function handleEditorChange(content){
-    console.log(content);
+  //when the note id changes, set the content to be equal to respective note id's content
+  useEffect(()=>{
+    if(noteId){
+      editorRef.current.setContent(getWorkingNoteContent());
+    }
+  },[noteId])
+
+
+  //save the editor content into parent's workingNote state
+  function handleEditorChange(content, editor){
+    updateNoteContent(noteId, content);
+  }
+
+  //fetch the text content of the current noteId
+  function getWorkingNoteContent(){
+    return getNoteById(noteId)?.text;
   }
 
   return (
@@ -23,7 +36,8 @@ export default function TextEditor({note, ...props}) {
         id="editor"
         onInit={(evt, editor) => editorRef.current = editor}
         onEditorChange={handleEditorChange}
-        initialValue={note?.text}
+        initialValue={getWorkingNoteContent}
+        // value={note?.text}
         //"<p>This is the initial content of the editor. Some <b>more</b> <i>text</i> could also go in here...</p>"
         init={{
           height: 500,

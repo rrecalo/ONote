@@ -5,19 +5,34 @@ import LoginButton from './LoginButton';
 import TextEditor from './TextEditor';
 import {getUserNotes, createNote} from './api/userAPI';
 import { Note } from './types/Note'
+import { updateNote } from './api/userAPI';
+import {AiOutlineCheck} from 'react-icons/ai';
 
 function App() {
 
-  const { user, isAuthenticated, isLoading, logout } = useAuth0();
+  const { user, isAuthenticated, logout } = useAuth0();
   const [notes, setNotes] = useState<Note[]>([]);
   const [workingNote, setWorkingNote] = useState<Note>();
+  const [confirmTitle, setConfirmTitle] = useState<boolean>(false);
+  const [lastTitleChange, setLastTitleChange] = useState<Date>();
 
   useEffect(()=>{
     if(user){
       console.log("successfully logged in as : " + user.email);
       refreshNoteList(true);
     }
-  },[user])
+  },[user]);
+  
+
+  //If the changes were not confirmed within 5 seconds, save them anyway.
+  useEffect(()=>{
+    const changeTitleInterval = setTimeout(()=>{
+      if(lastTitleChange){
+        performTitleChange();
+        }
+    }, 5000);
+    return () => clearInterval(changeTitleInterval);
+  },[lastTitleChange])
 
   //for 'refreshing' the list of notes associated with the user
   //*is called on first render, and every time a new note is created
@@ -31,6 +46,31 @@ function App() {
       }
       setNotes(response.data);
     });
+  }
+
+  function updateNoteContent(id: string, newContent : string){
+    const updatedNotes = [...notes];
+    const noteToUpdate = updatedNotes.find((note : Note) => note._id === id);
+    if(noteToUpdate){
+      noteToUpdate.text = newContent;
+    }
+    //update the note in React state
+    setNotes(updatedNotes);
+    //call a database update
+    updateNote(noteToUpdate as Note);
+  }
+
+  //updates the note in the 'notes' state as well as the database!
+  function updateNoteTitle(id: string, newTitle : string){
+    const updatedNotes = [...notes];
+    const noteToUpdate = updatedNotes.find((note : Note) => note._id === id);
+    if(noteToUpdate){
+      noteToUpdate.title = newTitle;
+    }
+    //update the note in React state
+    setNotes(updatedNotes);
+    //call a database update
+    updateNote(noteToUpdate as Note);
   }
 
   //for creating a new note in the database
@@ -48,8 +88,14 @@ function App() {
     }
   }
 
+  //set the new working note to be the one with the matching id parameter
   function openNote(id: string | undefined){
     setWorkingNote(notes.find((note : Note) => note._id === id));
+  }
+
+  //get a note object from state by ID -> used in TextEditor to fetch a newly selected note's content
+  function getNoteById(id : string){
+    return notes.find((note : Note) => note._id === id);
   }
 
   function renderNoteList(){
@@ -60,6 +106,24 @@ function App() {
         )
     )
   }
+
+  //changes the value so the input box value changes, but NOTHING else updates (no DB or sidebar update!!!)
+  function handleTitleInput(event : any){
+    event.preventDefault();
+    //console.log(event?.target.value);
+    setLastTitleChange(new Date());
+    setConfirmTitle(true);
+    setWorkingNote({...workingNote, title: event?.target.value} as Note);
+  }
+
+
+  //confirms the title change by changing the value in the notes state and the DB
+  function performTitleChange(){
+    if(workingNote){
+      updateNoteTitle(workingNote?._id, workingNote?.title);
+      setConfirmTitle(false);
+    }
+  }
   
   return (
     <div className="App">
@@ -69,7 +133,7 @@ function App() {
       {
       !isAuthenticated ? <LoginButton /> : 
       <div id="logout_functions" className="p-2">
-      <div className='text-base font-light pb-4 font-semibold'>Logged in</div>
+      <div className='text-base pb-4 font-semibold'>Logged in</div>
       <div className='text-base cursor-pointer text-center bg-stone-200 hover:bg-stone-300' onClick={() => 
         logout(
           { 
@@ -89,10 +153,17 @@ function App() {
       </div>
       </div>
       <div className='w-full p-2 flex flex-col h-full'>
-        <div className='text-3xl pb-2'>
-          {workingNote?.title || "Note Title"}
+        <div className='flex w-full justify-start items-center gap-3'>
+        <input className='text-3xl pb-2 outline-none w-3/4 max-w-[600px]' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}/>
+        {
+        confirmTitle ?
+        <button className='flex hover:bg-stone-200 px-2 py-1 rounded-lg content-center items-center' onClick={performTitleChange}>
+          <AiOutlineCheck /> confirm
+        </button>
+        : <></>
+        }
         </div>
-        <TextEditor note={workingNote} />
+        <TextEditor noteId={workingNote?._id} getNoteById={getNoteById} updateNoteContent={updateNoteContent}/>
         </div>
       </div>
     </div>
