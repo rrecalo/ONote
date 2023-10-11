@@ -16,6 +16,7 @@ function App() {
   const [confirmTitle, setConfirmTitle] = useState<boolean>(false);
   const [lastTitleChange, setLastTitleChange] = useState<Date>();
   const [disableDelete, setDisableDelete] = useState<boolean>(false);
+  const [newNoteCooldown, setNewNoteCooldown] = useState<boolean>(false);
 
   useEffect(()=>{
     if(user){
@@ -58,6 +59,15 @@ function App() {
       return () => clearInterval(toggleDelete);
     }
   }, [disableDelete])
+
+  useEffect(()=>{
+    if(newNoteCooldown){
+      const toggleMakeNewNote = setTimeout(()=>{
+        setNewNoteCooldown(false)
+      }, 3000);
+      return () => clearInterval(toggleMakeNewNote);
+    }
+  }, [newNoteCooldown])
 
 
   //for 'refreshing' the list of notes associated with the user
@@ -104,6 +114,7 @@ function App() {
   //for creating a new note in the database
   //will also refresh the note list
   function initializeNewNote(){
+
     if(user?.email){
       console.log("New note!");
       createNote(user.email, "").then((response: any) => 
@@ -113,6 +124,7 @@ function App() {
         setWorkingNote(response?.data.newNote as Note);
         //performTitleChange();
         refreshNoteList(false);
+        setNewNoteCooldown(true);
       });
 
     }
@@ -180,7 +192,7 @@ function App() {
         }>Logout?</div>
       </div>
       }
-      <button onClick={initializeNewNote} className='hover:bg-stone-300 bg-stone-200 text-sm rounded-lg p-2'>
+      <button disabled={newNoteCooldown} onClick={initializeNewNote} className='hover:bg-stone-300 bg-stone-200 text-sm rounded-lg p-2'>
         Make a New Note
       </button>
       <div className='flex flex-col justify-center items-center gap-2 my-3'>
