@@ -4,12 +4,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import LoginButton from './LoginButton';
 import TextEditor from './TextEditor';
 import {getUserNotes, createNote} from './api/userAPI';
-
-type Note = {
-  _id : string,
-  title: string,
-  text: string,
-}
+import { Note } from './types/Note'
 
 function App() {
 
