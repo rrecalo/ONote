@@ -26,7 +26,7 @@ const Sidebar = ({initializeNewNote, renderNoteList, newNoteCooldown, ...props})
   }
 
   return (
-    <div id="sidebar" className='w-1/6 h-full bg-stone-50 flex flex-col justify-start items-center pt-10'>
+    <div id="sidebar" className='sm:w-1/4 lg:w-1/6 h-full bg-stone-50 flex flex-col justify-start items-center pt-10'>
           {/*
           !isAuthenticated ? <LoginButton /> : 
           <div id="logout_functions" className="p-2">
