@@ -9,6 +9,7 @@ import { updateNote } from './api/userAPI';
 import {AiOutlineCheck, AiFillDelete, AiOutlineFileText, AiOutlinePlus} from 'react-icons/ai';
 import {BsDot} from 'react-icons/bs';
 import Sidebar from './Sidebar';
+import DeleteNoteButton from './DeleteNoteButton';
 
 function App() {
 
@@ -184,9 +185,14 @@ function App() {
   }
 
   function handleDeleteNote(){
-    deleteNote(workingNote as Note, user?.email).then(res=>console.log(res.data?.success));
-    setNotes(notes => notes.filter(note => note._id !== workingNote?._id));
-    setDisableDelete(true);
+    if(workingNote){
+      deleteNote(workingNote as Note, user?.email).then(res=>console.log(res.data?.success));
+      setNotes(notes => notes.filter(note => note._id !== workingNote?._id));
+      setDisableDelete(true);
+    }
+    else{
+      setDisableDelete(true);
+    }
     //setWorkingNote(notes[0] || undefined);
   }
   
@@ -209,9 +215,7 @@ function App() {
           <></>
           }
       
-          <button className={`text-lg hover:text-white px-2 py-2 rounded-md ${disableDelete ? 'hover:bg-stone-300' : 'hover:bg-red-500'}`} onClick={handleDeleteNote} disabled={disableDelete}>
-            <AiFillDelete />
-          </button>
+          <DeleteNoteButton handleDeleteNote={handleDeleteNote} disableDelete={disableDelete}/>
           </div>
             <TextEditor noteId={workingNote?._id} getNoteById={getNoteById} updateNoteContent={updateNoteContent}/>
           </div>
