@@ -1,0 +1,32 @@
+div .tox-toolbar__group{
+    border:none !important;
+}
+
+.tox-toolbar__primary{
+    border: none !important;
+}
+
+.tox-toolbar-overlord{
+    border: none !important;
+}
+
+.tox-tinymce{
+    border-color: #f5f5f4 !important;
+    height: 100% !important;
+
+    /* //overflow: auto !important; */
+}
+
+*{
+}
+
+
+/* 
+.tox-anchorbar{
+    color:#f5f5f4 !important;
+    stroke: #f5f5f4 !important;
+}
+*/
+.tox-statusbar__branding{
+    display: none;
+}
