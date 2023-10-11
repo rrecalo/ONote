@@ -46,7 +46,7 @@ function App() {
       if(lastTitleChange){
         performTitleChange();
         }
-    }, 5000);
+    }, 3000);
     return () => clearInterval(changeTitleInterval);
   },[lastTitleChange])
 
@@ -202,7 +202,7 @@ function App() {
       </div>
       </div>
       <div className='w-full p-2 flex flex-col h-full'>
-        <div className='flex w-full justify-between items-center gap-3'>
+        <div className='flex w-full justify-between items-center gap-3 pe-5'>
         <input className='text-3xl pb-2 outline-none w-3/4 max-w-[600px]' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}/>
         {
         confirmTitle ?
