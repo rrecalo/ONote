@@ -34,7 +34,7 @@ function App() {
       setTimeout(()=>
       {
         initializeNewNote();
-      }, 1900);
+      }, 100);
     }
     //if there is some notes, but none of them are the current 'workingNote', then we need to reselect another
     //existing note as the workingNote so our editor can rerender!
@@ -67,7 +67,7 @@ function App() {
     if(newNoteCooldown){
       const toggleMakeNewNote = setTimeout(()=>{
         setNewNoteCooldown(false)
-      }, 3000);
+      }, 2000);
       return () => clearInterval(toggleMakeNewNote);
     }
   }, [newNoteCooldown])
