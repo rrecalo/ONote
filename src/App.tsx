@@ -19,9 +19,52 @@ function App() {
 
   useEffect(()=>{
     if(user){
-      console.log(user);
+      console.log("successfully logged in as : " + user.email);
+      refreshNoteList(true);
     }
   },[user])
+
+  //for 'refreshing' the list of notes associated with the user
+  //*is called on first render, and every time a new note is created
+  //the setNotes() call triggers a re-render of the notes list in the sidebar
+  //if loadFirstNote is 'true', then the current working note is set to the first one
+  //that is returned from the database
+  function refreshNoteList(loadFirstNote: boolean){
+    getUserNotes(user?.email).then((response: any)=>{
+      if(loadFirstNote){
+        setWorkingNote(response.data[0]);
+      }
+      setNotes(response.data);
+    });
+  }
+
+  //for creating a new note in the database
+  //will also refresh the note list
+  function initializeNewNote(){
+    if(user?.email){
+      console.log("New note!");
+      createNote(user.email, "Sample text...").then((response: any) => 
+      { 
+        console.log(response?.data.newNote as Note);
+        setWorkingNote(response?.data.newNote as Note);
+        refreshNoteList(false);
+      });
+
+    }
+  }
+
+  function openNote(id: string | undefined){
+    setWorkingNote(notes.find((note : Note) => note._id === id));
+  }
+
+  function renderNoteList(){
+    return (
+      notes?.map(note => 
+        //{`text-white ${true?'text-green-500' : 'text-red-500'`}
+        (<div className={`cursor-pointer bg-stone-200 p-1 rounded-md" + ${workingNote?._id === note._id ? 'bg-stone-300' : 'bg-stone-200'}`} onClick={()=>openNote(note?._id)} key={note?._id}>{note?.title}</div>)
+        )
+    )
+  }
   
   return (
     <div className="App">
@@ -31,22 +74,29 @@ function App() {
       {
       !isAuthenticated ? <LoginButton /> : 
       <div id="logout_functions" className="p-2">
-      <div className='text-base font-light pb-4'>Logged in</div>
-      <div className='text-base cursor-pointer' onClick={() => 
+      <div className='text-base font-light pb-4 font-semibold'>Logged in</div>
+      <div className='text-base cursor-pointer text-center bg-stone-200 hover:bg-stone-300' onClick={() => 
         logout(
           { 
             logoutParams: {returnTo: window.location.origin}
           }
           )
-        }>Click here to logout!</div>
+        }>Logout?</div>
       </div>
       }
+      <button onClick={initializeNewNote} className='hover:bg-stone-300 bg-stone-200 text-sm rounded-lg p-2'>
+        Make a New Note
+      </button>
+      <div className='flex flex-col justify-center items-center gap-2 my-3'>
+      {
+        renderNoteList()
+      }
+      </div>
       </div>
       <div className='w-full p-2 flex flex-col h-full'>
         <div className='text-3xl pb-2'>
-          Note Title
+          {workingNote?.title || "Note Title"}
         </div>
-        <TextEditor />
         <TextEditor note={workingNote} />
         </div>
       </div>
