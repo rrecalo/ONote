@@ -36,7 +36,7 @@ export default function TextEditor({noteId, getNoteById, updateNoteContent, ...p
         id="editor"
         onInit={(evt, editor) => editorRef.current = editor}
         onEditorChange={handleEditorChange}
-        initialValue={getWorkingNoteContent}
+        //initialValue={getWorkingNoteContent}
         // value={note?.text}
         //"<p>This is the initial content of the editor. Some <b>more</b> <i>text</i> could also go in here...</p>"
         init={{
