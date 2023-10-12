@@ -6,10 +6,11 @@ import TextEditor from './TextEditor';
 import {getUserNotes, createNote, deleteNote} from './api/userAPI';
 import { Note } from './types/Note'
 import { updateNote } from './api/userAPI';
-import {AiOutlineCheck, AiFillDelete, AiOutlineFileText, AiOutlinePlus} from 'react-icons/ai';
+import {AiOutlineCheck} from 'react-icons/ai';
 import {BsDot} from 'react-icons/bs';
 import Sidebar from './Sidebar';
 import DeleteNoteButton from './DeleteNoteButton';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
   const [lastTitleChange, setLastTitleChange] = useState<Date>();
   const [disableDelete, setDisableDelete] = useState<boolean>(false);
   const [newNoteCooldown, setNewNoteCooldown] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
   useEffect(()=>{
     if(user){
@@ -27,6 +29,23 @@ function App() {
       refreshNoteList(true);
     }
   },[user]);
+
+  useEffect(()=>{
+
+    const handleKeyDown = (event : KeyboardEvent) =>{
+      if(event.key === 'Escape'){
+        toggleDeleteModal();
+        //window.blur();
+      }
+    }
+
+    if(showDeleteModal){
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () =>{
+      window.addEventListener('keydown', handleKeyDown);
+    }
+  }, [showDeleteModal])
 
   useEffect(()=>{
     //if there are no notes, we want to make a new one so the editor don't bug out!
@@ -167,6 +186,13 @@ function App() {
     )
   }
 
+  function toggleDeleteModal(){
+    if(showDeleteModal){
+      setShowDeleteModal(false);
+    }
+    else setShowDeleteModal(true);
+  }
+
   //changes the value so the input box value changes, but NOTHING else updates (no DB or sidebar update!!!)
   function handleTitleInput(event : any){
     event.preventDefault();
@@ -189,6 +215,7 @@ function App() {
       deleteNote(workingNote as Note, user?.email).then(res=>console.log(res.data?.success));
       setNotes(notes => notes.filter(note => note._id !== workingNote?._id));
       setDisableDelete(true);
+      setShowDeleteModal(false);
     }
     else{
       setDisableDelete(true);
@@ -198,14 +225,24 @@ function App() {
   
   return (
     <div className="App">
-      
+      <ConfirmDeleteModal showModal={showDeleteModal} closeModal={toggleDeleteModal} deleteNote={handleDeleteNote} workingNoteTitle={workingNote?.title}/>
       <div className='flex flex-row justify-start items-start w-full h-[100vh]'>
 
         <Sidebar initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown}/>
 
         <div className='w-full p-2 flex flex-col h-full '>
           <div className='flex w-full justify-between items-center gap-3 pe-5 bg-stone-50'>
-          <input className='text-3xl py-1 outline-none w-3/4 max-w-[600px] text-stone-800 bg-stone-50' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}/>
+          <div className='w-3/4 max-w-[600px]'>
+            <input className='text-3xl pt-1 outline-none w-full max-w-[600px] text-stone-800 bg-stone-50' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}/>
+            <div className='text-stone-400 text-[0.75rem] h-4'>
+            {
+              confirmTitle ?
+              <>{32 - (workingNote?.title?.length || 0)} characters remaining...</>
+              :
+              <></>
+            }
+            </div>
+          </div>
           {
           confirmTitle ?
           <button className='flex hover:bg-stone-200 px-2 py-1 rounded-lg content-center items-center' onClick={performTitleChange}>
@@ -215,7 +252,7 @@ function App() {
           <></>
           }
       
-          <DeleteNoteButton handleDeleteNote={handleDeleteNote} disableDelete={disableDelete}/>
+          <DeleteNoteButton handleDeleteNote={toggleDeleteModal} disableDelete={disableDelete}/>
           </div>
             <TextEditor noteId={workingNote?._id} getNoteById={getNoteById} updateNoteContent={updateNoteContent}/>
           </div>
