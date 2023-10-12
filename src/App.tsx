@@ -169,14 +169,14 @@ function App() {
       notes?.map(note => 
         //{`text-white ${true?'text-green-500' : 'text-red-500'`}
         (
-        <div className={`flex flex-row justify-start items-center pl-5 w-full cursor-pointer
-        font-verylight text-stone-900
-        " + ${workingNote?._id === note._id ? 'bg-stone-200' : 'bg-transparent'}`} 
+        <div className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
+        t  gap-1 
+        " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
         onClick={()=>openNote(note?._id)}
         key={note?._id}
         >
           <div>
-            <BsDot className='w-5 h-5 text-stone-900'/>
+            <BsDot className='w-4 h-4 text-stone-900'/>
           </div>
           <div>
             {note?.title}
