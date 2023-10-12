@@ -222,6 +222,12 @@ function App() {
     }
     //setWorkingNote(notes[0] || undefined);
   }
+
+  function handleTitleInputKeyPress(event : any) {
+    if(event.key === "Enter"){
+      performTitleChange();
+    }
+  }
   
   return (
     <div className="App">
@@ -233,7 +239,8 @@ function App() {
         <div className='w-full p-2 flex flex-col h-full '>
           <div className='flex w-full justify-between items-center gap-3 pe-5 bg-stone-50'>
           <div className='w-3/4 max-w-[600px]'>
-            <input className='text-3xl pt-1 outline-none w-full max-w-[600px] text-stone-800 bg-stone-50' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}/>
+            <input className='text-3xl pt-1 outline-none w-full max-w-[600px] text-stone-950 bg-stone-50' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}
+            onKeyDown={handleTitleInputKeyPress}/>
             <div className='text-stone-400 text-[0.75rem] h-4'>
             {
               confirmTitle ?
