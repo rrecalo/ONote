@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {AiOutlineFileText, AiOutlinePlus} from 'react-icons/ai';
+import PreferenceSelector from './PreferenceSelector';
 
-const Sidebar = ({initializeNewNote, renderNoteList, newNoteCooldown, ...props}) => {
+const Sidebar = ({initializeNewNote, renderNoteList, newNoteCooldown, handlePref, pref, ...props}) => {
 
   const [isHoveringAdd, setIsHoveringAdd] = useState(false);
   const [confirmAdd, setConfirmAdd] = useState(false);
@@ -26,7 +27,8 @@ const Sidebar = ({initializeNewNote, renderNoteList, newNoteCooldown, ...props})
   }
 
   return (
-    <div id="sidebar" className='sm:w-1/4 lg:w-1/6 h-full bg-stone-50 flex flex-col justify-start items-center pt-10
+    <div id="sidebar" className='max-w-1/4 sm:max-w-1/4 lg:max-w-1/6 sm:min-w-[232px] h-full 
+    bg-stone-50 flex flex-col justify-start items-center pt-10
     '>
           {/*
           !isAuthenticated ? <LoginButton /> : 
@@ -41,6 +43,9 @@ const Sidebar = ({initializeNewNote, renderNoteList, newNoteCooldown, ...props})
             }>Logout?</div>
           </div>
           */}
+          <div className='h-10'>
+          <PreferenceSelector handlePreferenceChange={handlePref} preferences={pref}/>
+          </div>
           <div id="your-notes-section" className='flex flex-col justify-center items-start gap-1 mt-5 w-full'>
             <div className='flex flex-row items-center text-lg text-stone-800 text-left gap-1 pl-3'>
               <div>

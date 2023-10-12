@@ -11,6 +11,9 @@ import {BsDot} from 'react-icons/bs';
 import Sidebar from './Sidebar';
 import DeleteNoteButton from './DeleteNoteButton';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+import {Preferences, EditorPosition, EditorWidth} from './types/Preferences';
+
+
 
 function App() {
 
@@ -22,6 +25,7 @@ function App() {
   const [disableDelete, setDisableDelete] = useState<boolean>(false);
   const [newNoteCooldown, setNewNoteCooldown] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [preferences, setPreferences] = useState<Preferences>();
 
   useEffect(()=>{
     if(user){
@@ -170,7 +174,7 @@ function App() {
         //{`text-white ${true?'text-green-500' : 'text-red-500'`}
         (
         <div className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
-        t  gap-1 
+        t gap-1 pe-2
         " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
         onClick={()=>openNote(note?._id)}
         key={note?._id}
@@ -228,15 +232,20 @@ function App() {
       performTitleChange();
     }
   }
+
+  function handlePreferenceUpdate(newPref : Preferences){
+    console.log(newPref);
+    setPreferences(old => newPref);
+  }
   
   return (
     <div className="App">
       <ConfirmDeleteModal showModal={showDeleteModal} closeModal={toggleDeleteModal} deleteNote={handleDeleteNote} workingNoteTitle={workingNote?.title}/>
       <div className='flex flex-row justify-start items-start w-full h-[100vh]'>
 
-        <Sidebar initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown}/>
-
-        <div className='w-full p-2 flex flex-col h-full '>
+        <Sidebar initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}/>
+        
+        <div className={`flex-grow p-2 flex flex-col h-full ${preferences?.editorWidth  + " " + preferences?.editorPosition}`}>
           <div className='flex w-full justify-between items-center gap-3 pe-5 bg-stone-50'>
           <div className='w-3/4 max-w-[600px]'>
             <input className='text-3xl pt-1 outline-none w-full max-w-[600px] text-stone-950 bg-stone-50' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}
@@ -261,7 +270,9 @@ function App() {
       
           <DeleteNoteButton handleDeleteNote={toggleDeleteModal} disableDelete={disableDelete}/>
           </div>
+            
             <TextEditor noteId={workingNote?._id} getNoteById={getNoteById} updateNoteContent={updateNoteContent}/>
+          
           </div>
 
       </div>
