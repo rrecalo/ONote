@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {AiOutlineFileText, AiOutlinePlus} from 'react-icons/ai';
 import PreferenceSelector from './PreferenceSelector';
 
-const Sidebar = ({initializeNewNote, renderNoteList, newNoteCooldown, handlePref, pref, folders,...props}) => {
+const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNoteCooldown, handlePref, pref, folders,...props}) => {
 
   const [isHoveringAdd, setIsHoveringAdd] = useState(false);
   const [confirmAdd, setConfirmAdd] = useState(false);
@@ -67,16 +67,8 @@ const Sidebar = ({initializeNewNote, renderNoteList, newNoteCooldown, handlePref
                 Notes
               </div>
             </div>
-          {
-            folders?.map(folder => 
-              <div>
-                {folder?.name}
-              {renderNoteList(folder)}
-              </div>
-            )
-  
-          }
-          {renderNoteList("")}
+          {renderNoteList(folders)}
+          {renderTopLevelNotes()}
           </div>
           <div onClick={handleNewNoteClick} 
             onMouseEnter={() => setIsHoveringAdd(true)}

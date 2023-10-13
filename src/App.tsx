@@ -13,6 +13,7 @@ import DeleteNoteButton from './DeleteNoteButton';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import {Preferences} from './types/Preferences';
 import { Folder } from './types/Folder';
+import FolderComponent from './FolderComponent';
 
 
 
@@ -171,58 +172,61 @@ function App() {
   }
 
   //for rendering the existing notes in the sidebar!
-  function renderNoteList(folder : Folder){
+  function renderNoteList(folders : Array<Folder>){
 
-    if(!folder)
+    const elements = folders.map(folder => {
+    
+      const notesToRender = notes.filter(note => note.folder === folder._id);
+      
+      const noteElements = notesToRender.map(note => (
+        <div className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
+        t gap-1 pe-2
+        " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
+        onClick={()=>openNote(note?._id)}
+        key={note?._id}
+        >
+          
+          <div>
+            <BsDot className='w-4 h-4 text-stone-900'/>
+          </div>
+          <div>
+            {note?.title}
+          </div>
+        </div>));
+
       return (
-        notes.map((note : Note) => 
-        {
-          if(note?.folder === ""){
-            return (
-              <div className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
-              t gap-1 pe-2
-              " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
-              onClick={()=>openNote(note?._id)}
-              key={note?._id}
-              >
-                
-                <div>
-                  <BsDot className='w-4 h-4 text-stone-900'/>
-                </div>
-                <div>
-                  {note?.title}
-                </div>
-              </div>
-              )
-          }
-          else return null;
-        })
+        <FolderComponent 
+          folder={folder}
+          notes={noteElements}
+        />
       )
-    else
+    })
+    return elements;
+  }
+
+  function renderTopLevelNotes(){
     return (
-      notes.map((note : Note) => 
-        {
-          if(note?.folder === folder?._id){
-            return (
-              <div className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
-              t gap-1 pe-2
-              " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
-              onClick={()=>openNote(note?._id)}
-              key={note?._id}
-              >
-                
-                <div>
-                  <BsDot className='w-4 h-4 text-stone-900'/>
-                </div>
-                <div>
-                  {note?.title}
-                </div>
-              </div>
-              )
-          }
-          else return null;
-        })
-    )
+      notes.map(note => {
+        
+      if(note.folder === "")
+      return <div className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
+      t gap-1 pe-2
+      " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
+      onClick={()=>openNote(note?._id)}
+      key={note?._id}
+      >
+        
+        {/* <div>
+          <BsDot className='w-4 h-4 text-stone-900'/>
+        </div> */}
+        <div>
+          {note?.title}
+        </div>
+      </div>
+      else
+        return null
+      })
+      )
   }
 
   function toggleDeleteModal(){
@@ -278,7 +282,7 @@ function App() {
       <ConfirmDeleteModal showModal={showDeleteModal} closeModal={toggleDeleteModal} deleteNote={handleDeleteNote} workingNoteTitle={workingNote?.title}/>
       <div className='flex flex-row justify-start items-start w-full h-[100vh]'>
 
-        <Sidebar folders={folders} initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}/>
+        <Sidebar renderTopLevelNotes={renderTopLevelNotes} folders={folders} initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}/>
         
         <div className={`flex-grow p-2 flex flex-col h-full ${preferences?.editorWidth  + " " + preferences?.editorPosition}`}>
           <div className='flex w-full justify-between items-center gap-3 pe-5 bg-stone-50'>
@@ -316,3 +320,23 @@ function App() {
 }
 
 export default App;
+
+/**
+ * 
+ * return (
+              <div className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
+              t gap-1 pe-2
+              " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
+              onClick={()=>openNote(note?._id)}
+              key={note?._id}
+              >
+                
+                <div>
+                  <BsDot className='w-4 h-4 text-stone-900'/>
+                </div>
+                <div>
+                  {note?.title}
+                </div>
+              </div>
+              )
+ */
