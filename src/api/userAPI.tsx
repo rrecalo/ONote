@@ -10,6 +10,12 @@ export async function getUserNotes(email : string | undefined){
     return axios.get(BASE_URL + endpoint, {params: {email : email}}).then((response) =>{return(response)});
 }
 
+export async function getUserFolders(email : string | undefined){
+    
+    let endpoint = "/getUserFolders";
+    return axios.get(BASE_URL + endpoint, {params: {email : email}}).then((response) =>{return(response)});
+}
+
 export async function createNote(email : string | undefined, text : string | undefined){
 
     let endpoint = "/createNote";
@@ -19,7 +25,7 @@ export async function createNote(email : string | undefined, text : string | und
 
 export async function updateNote(note : Note){
     let endpoint = "/updateNote";
-    return axios.put(BASE_URL + endpoint, {title : note.title, _id: note._id, text: note.text}).then((response) => {return(response)});
+    return axios.put(BASE_URL + endpoint, {title : note.title, _id: note._id, folder: note.folder, text: note.text}).then((response) => {return(response)});
 }
 
 export async function deleteNote(note : Note, email: string | undefined){

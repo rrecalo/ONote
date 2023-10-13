@@ -3,7 +3,7 @@ import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import LoginButton from './LoginButton';
 import TextEditor from './TextEditor';
-import {getUserNotes, createNote, deleteNote} from './api/userAPI';
+import {getUserNotes, createNote, deleteNote, getUserFolders} from './api/userAPI';
 import { Note } from './types/Note'
 import { updateNote } from './api/userAPI';
 import {AiOutlineCheck} from 'react-icons/ai';
@@ -11,7 +11,8 @@ import {BsDot} from 'react-icons/bs';
 import Sidebar from './Sidebar';
 import DeleteNoteButton from './DeleteNoteButton';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
-import {Preferences, EditorPosition, EditorWidth} from './types/Preferences';
+import {Preferences} from './types/Preferences';
+import { Folder } from './types/Folder';
 
 
 
@@ -26,11 +27,13 @@ function App() {
   const [newNoteCooldown, setNewNoteCooldown] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [preferences, setPreferences] = useState<Preferences>();
+  const [folders, setFolders] = useState<object>([]);
 
   useEffect(()=>{
     if(user){
       console.log("successfully logged in as : " + user.email);
       refreshNoteList(true);
+      getUserFolders(user?.email).then(result => setFolders(result.data));
     }
   },[user]);
 
@@ -168,25 +171,57 @@ function App() {
   }
 
   //for rendering the existing notes in the sidebar!
-  function renderNoteList(){
+  function renderNoteList(folder : Folder){
+
+    if(!folder)
+      return (
+        notes.map((note : Note) => 
+        {
+          if(note?.folder === ""){
+            return (
+              <div className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
+              t gap-1 pe-2
+              " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
+              onClick={()=>openNote(note?._id)}
+              key={note?._id}
+              >
+                
+                <div>
+                  <BsDot className='w-4 h-4 text-stone-900'/>
+                </div>
+                <div>
+                  {note?.title}
+                </div>
+              </div>
+              )
+          }
+          else return null;
+        })
+      )
+    else
     return (
-      notes?.map(note => 
-        //{`text-white ${true?'text-green-500' : 'text-red-500'`}
-        (
-        <div className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
-        t gap-1 pe-2
-        " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
-        onClick={()=>openNote(note?._id)}
-        key={note?._id}
-        >
-          <div>
-            <BsDot className='w-4 h-4 text-stone-900'/>
-          </div>
-          <div>
-            {note?.title}
-          </div>
-        </div>)
-        )
+      notes.map((note : Note) => 
+        {
+          if(note?.folder === folder?._id){
+            return (
+              <div className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
+              t gap-1 pe-2
+              " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
+              onClick={()=>openNote(note?._id)}
+              key={note?._id}
+              >
+                
+                <div>
+                  <BsDot className='w-4 h-4 text-stone-900'/>
+                </div>
+                <div>
+                  {note?.title}
+                </div>
+              </div>
+              )
+          }
+          else return null;
+        })
     )
   }
 
@@ -243,7 +278,7 @@ function App() {
       <ConfirmDeleteModal showModal={showDeleteModal} closeModal={toggleDeleteModal} deleteNote={handleDeleteNote} workingNoteTitle={workingNote?.title}/>
       <div className='flex flex-row justify-start items-start w-full h-[100vh]'>
 
-        <Sidebar initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}/>
+        <Sidebar folders={folders} initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}/>
         
         <div className={`flex-grow p-2 flex flex-col h-full ${preferences?.editorWidth  + " " + preferences?.editorPosition}`}>
           <div className='flex w-full justify-between items-center gap-3 pe-5 bg-stone-50'>

@@ -2,10 +2,12 @@ import React, {useEffect, useState} from 'react';
 import {AiOutlineFileText, AiOutlinePlus} from 'react-icons/ai';
 import PreferenceSelector from './PreferenceSelector';
 
-const Sidebar = ({initializeNewNote, renderNoteList, newNoteCooldown, handlePref, pref, ...props}) => {
+const Sidebar = ({initializeNewNote, renderNoteList, newNoteCooldown, handlePref, pref, folders,...props}) => {
 
   const [isHoveringAdd, setIsHoveringAdd] = useState(false);
   const [confirmAdd, setConfirmAdd] = useState(false);
+  const [folderCreation, setFolderCreation] = useState(false);
+  const [folderNameInput, setFolderNameInput] = useState("");
   
   useEffect(()=>{
     if(confirmAdd){
@@ -24,6 +26,16 @@ const Sidebar = ({initializeNewNote, renderNoteList, newNoteCooldown, handlePref
     else{
       initializeNewNote();
     }
+  }
+
+  function handleNewFolderClick(event){
+    event.preventDefault();
+    if(!folderCreation){
+      setFolderCreation(true);
+    }
+    else 
+      //initializeNewFolder();
+      return;
   }
 
   return (
@@ -56,22 +68,39 @@ const Sidebar = ({initializeNewNote, renderNoteList, newNoteCooldown, handlePref
               </div>
             </div>
           {
-            renderNoteList()
+            folders?.map(folder => 
+              <div>
+                {folder?.name}
+              {renderNoteList(folder)}
+              </div>
+            )
+  
           }
+          {renderNoteList("")}
           </div>
           <div onClick={handleNewNoteClick} 
             onMouseEnter={() => setIsHoveringAdd(true)}
             onMouseLeave={() => {setIsHoveringAdd(false); setConfirmAdd(false)}}
-            className={`flex h-[20%] w-[100%] p-5 justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
+            className={`flex h-[20%] w-[100%] justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
              {
               isHoveringAdd  && !newNoteCooldown  ? 
-                <AiOutlinePlus/>
+                <div className='w-full h-full'>
+                  <div onClick={handleNewNoteClick} className='flex justify-center items-center bg-stone-100 w-full h-1/2'>
+                    New Note
+                  </div>
+                  {folderCreation ?
+                  <input className='' placeholder='Folder Name...' maxLength={24}/>
+                  :
+                  <div onClick={handleNewFolderClick} className='flex justify-center items-center bg-stone-100 w-full h-1/2'>
+                    New Folder
+                  </div>
+                  }
+                </div>
                 : 
                 <></>
             }
           </div>
         </div>
-  )
-}
+  )}
 
 export default Sidebar
