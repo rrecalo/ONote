@@ -17,12 +17,17 @@ export async function getUserFolders(email : string | undefined){
     return axios.get(BASE_URL + endpoint, {params: {email : email}}).then((response) =>{return(response)});
 }
 
-export async function createNote(email : string | undefined, text : string | undefined){
+export async function createNote(email : string | undefined, title : string, text : string | undefined){
 
     let endpoint = "/createNote";
-    return axios.post(BASE_URL + endpoint, {email : email, text: text}).then((response) =>{return(response)});
-
+    return axios.post(BASE_URL + endpoint, {email : email, title : title, text: text}).then((response) =>{return(response)});
 }
+
+export async function createFolder(email: string | undefined, folderName : string){
+    let endpoint = "/createFolder";
+    return axios.put(BASE_URL + endpoint, {email : email, name: folderName}).then((response) =>{return(response)});
+}
+
 
 export async function updateNote(note : Note){
     let endpoint = "/updateNote";
