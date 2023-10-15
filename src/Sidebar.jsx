@@ -2,13 +2,21 @@ import React, {useEffect, useState} from 'react';
 import {AiOutlineFileText, AiOutlinePlus} from 'react-icons/ai';
 import PreferenceSelector from './PreferenceSelector';
 
-const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNoteCooldown, handlePref, pref, folders,...props}) => {
+const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNoteCooldown, handlePref, pref, folders, initializeNewFolder, notes, moveNoteOutOfFolder, ...props}) => {
 
   const [isHoveringAdd, setIsHoveringAdd] = useState(false);
   const [confirmAdd, setConfirmAdd] = useState(false);
   const [folderCreation, setFolderCreation] = useState(false);
+  const [noteCreation, setNoteCreation] = useState(false);
+  const [noteNameInput, setNoteNameInput] = useState("");
   const [folderNameInput, setFolderNameInput] = useState("");
+  const [children, setChildren] = useState([]);
   
+  useEffect(()=>{
+    setChildren(renderNoteList(folders));
+    console.log(children);
+  }, [notes, folders])
+
   useEffect(()=>{
     if(confirmAdd){
       const confirmAddTimeout = setTimeout(()=>{
@@ -20,11 +28,9 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
 
   function handleNewNoteClick(event){
     event.preventDefault();
-    if(!confirmAdd){
-      setConfirmAdd(true);
-    }
-    else{
-      initializeNewNote();
+    if(!noteCreation){
+      setNoteCreation(true);
+      if(folderCreation) setFolderCreation(false);
     }
   }
 
@@ -32,16 +38,40 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
     event.preventDefault();
     if(!folderCreation){
       setFolderCreation(true);
+      if(noteCreation) setNoteCreation(false);
     }
-    else 
-      //initializeNewFolder();
-      return;
+  }
+
+  function handleNewNoteSubmit(event){
+    if(event.key === "Enter"){
+      initializeNewNote(event.target.value);
+      setNoteCreation(false);
+      setNoteNameInput("");
+    }
+  }
+
+  function handleNewFolderSubmit(event){
+    if(event.key === "Enter"){
+      initializeNewFolder(event.target.value);
+      setFolderCreation(false);
+      setFolderNameInput("");
+    }
+  }
+  function handleFolderDrop(event){
+    event.preventDefault();
+    const data = JSON.parse(event.dataTransfer.getData("application/json"));
+    if(data.folder !== ""){
+      moveNoteOutOfFolder(data);
+      console.log("note from a folder!");
+    }
+    else console.log("note from no folder!");
   }
 
   return (
-    <div id="sidebar" className='max-w-1/4 sm:max-w-1/4 lg:max-w-1/6 sm:min-w-[232px] h-full 
-    bg-stone-50 flex flex-col justify-start items-center pt-10
-    '>
+    <div id="sidebar" className='select-none max-w-1/4 sm:max-w-1/4 lg:max-w-1/6 sm:min-w-[232px] h-full 
+    bg-stone-50 flex flex-col justify-start items-center pt-10'
+    
+    >
           {/*
           !isAuthenticated ? <LoginButton /> : 
           <div id="logout_functions" className="p-2">
@@ -60,33 +90,42 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
           </div>
           <div id="your-notes-section" className='flex flex-col justify-center items-start gap-1 mt-5 w-full'>
             <div className='flex flex-row items-center text-lg text-stone-800 text-left gap-1 pl-3'>
-              <div>
+              {/* <div>
                 <AiOutlineFileText className='text-stone-600 w-4 h-4'/>
-              </div>
-              <div className='font-bold text-lg text-stone-600'>
+              </div> */}
+              <div className='font-bold text-xl text-stone-600'>
                 Notes
               </div>
             </div>
           {renderNoteList(folders)}
-          {renderTopLevelNotes()}
+          {renderTopLevelNotes(notes)}
           </div>
-          <div onClick={handleNewNoteClick} 
+          <div 
+            onDrop={handleFolderDrop} onDragOver={(e)=>{e.preventDefault()}}
             onMouseEnter={() => setIsHoveringAdd(true)}
-            onMouseLeave={() => {setIsHoveringAdd(false); setConfirmAdd(false)}}
-            className={`flex h-[20%] w-[100%] justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
+            onMouseLeave={() => {setIsHoveringAdd(false); setNoteCreation(false); setFolderCreation(false);}}
+            className={`mt-10 flex h-[20%] w-[100%] justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
              {
               isHoveringAdd  && !newNoteCooldown  ? 
                 <div className='w-full h-full'>
                   <div onClick={handleNewNoteClick} className='flex justify-center items-center bg-stone-100 w-full h-1/2'>
-                    New Note
-                  </div>
-                  {folderCreation ?
-                  <input className='' placeholder='Folder Name...' maxLength={24}/>
+                  {noteCreation ?
+                  <input className='outline-none' placeholder='Note Name...' maxLength={18} value={noteNameInput}
+                  onChange={(e)=>setNoteNameInput(e.target.value)} onKeyDown={handleNewNoteSubmit}/>
                   :
-                  <div onClick={handleNewFolderClick} className='flex justify-center items-center bg-stone-100 w-full h-1/2'>
-                    New Folder
-                  </div>
+                  <>New Note</>
                   }
+                  </div>
+                  
+                  <div onClick={handleNewFolderClick} className='flex justify-center items-center bg-stone-100 w-full h-1/2'>
+                  {folderCreation ?
+                  <input className='outline-none' placeholder='Folder Name...' maxLength={18} value={folderNameInput}
+                  onChange={(e)=>setFolderNameInput(e.target.value)} onKeyDown={handleNewFolderSubmit}/>
+                  :
+                  <>New Folder</>
+                  }
+                  </div>
+                  
                 </div>
                 : 
                 <></>

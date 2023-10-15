@@ -3,10 +3,10 @@ import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import LoginButton from './LoginButton';
 import TextEditor from './TextEditor';
-import {getUserNotes, createNote, deleteNote, getUserFolders} from './api/userAPI';
+import {getUserNotes, createNote, deleteNote, getUserFolders, updateFolder, createFolder} from './api/userAPI';
 import { Note } from './types/Note'
 import { updateNote } from './api/userAPI';
-import {AiOutlineCheck} from 'react-icons/ai';
+import {AiOutlineCheck, AiOutlineFileText} from 'react-icons/ai';
 import {BsDot} from 'react-icons/bs';
 import Sidebar from './Sidebar';
 import DeleteNoteButton from './DeleteNoteButton';
@@ -28,7 +28,7 @@ function App() {
   const [newNoteCooldown, setNewNoteCooldown] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [preferences, setPreferences] = useState<Preferences>();
-  const [folders, setFolders] = useState<object>([]);
+  const [folders, setFolders] = useState<Folder[]>([]);
 
   useEffect(()=>{
     if(user){
@@ -138,17 +138,28 @@ function App() {
       //call a database update
       updateNote(noteToUpdate as Note);
     }
-    
+  }
+
+  function updateFolderName(folder : Folder, newName : string){
+    const updatedFolders = folders;
+    const folderToUpdate = updatedFolders.find((f :  Folder) => f._id === folder._id);
+    if(folderToUpdate){
+      folderToUpdate.name = newName;
+      setFolders(updatedFolders);
+      //store in DB
+      updateFolder(user?.email, folderToUpdate);
+    }
+
   }
 
   //for creating a new note in the database
   //will also refresh the note list
-  function initializeNewNote(){
+  function initializeNewNote(noteName? : string){
     if(newNoteCooldown) return;
 
     if(user?.email){
       console.log("New note!");
-      createNote(user.email, "").then((response: any) => 
+      createNote(user.email, noteName || "", "").then((response: any) => 
       { 
         //add it to the notes state, and THEN set it as the working note!
         setNotes(notes => [...notes, response?.data.newNote as Note]);
@@ -156,6 +167,25 @@ function App() {
         //performTitleChange();
         refreshNoteList(false);
         setNewNoteCooldown(true);
+      });
+
+    }
+  }
+  
+  function initializeNewFolder(folderName : string){
+
+    if(user?.email){
+      console.log("New folder!");
+      createFolder(user.email, folderName).then((response: any) => 
+      { 
+        const newFolderObject : Folder = {_id: response.data.insertedId, name: folderName};
+        setFolders(folders => [...folders, newFolderObject]);
+        //add it to the notes state, and THEN set it as the working note!
+        //setFolders(folders => [...folders, response?.data.newNote as Note]);
+        //setWorkingNote(response?.data.newNote as Note);
+        //performTitleChange();
+        //refreshNoteList(false);
+        //setNewNoteCooldown(true);
       });
 
     }
@@ -174,30 +204,37 @@ function App() {
   //for rendering the existing notes in the sidebar!
   function renderNoteList(folders : Array<Folder>){
 
+    function handleDragStart(event : any, note : any){
+      event.dataTransfer.setData("application/json", JSON.stringify(note));
+    }
+
     const elements = folders.map(folder => {
     
-      const notesToRender = notes.filter(note => note.folder === folder._id);
-      
+      const notesToRender = notes.filter(note => note.folder === folder._id);  
       const noteElements = notesToRender.map(note => (
-        <div className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
+        <div
+        draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
         t gap-1 pe-2
         " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
         onClick={()=>openNote(note?._id)}
-        key={note?._id}
-        >
+        key={note?._id}>
           
           <div>
-            <BsDot className='w-4 h-4 text-stone-900'/>
+            <AiOutlineFileText className='w-4 h-4 text-stone-900'/>
+            {/* <BsDot className='w-4 h-4 text-stone-900'/> */}
           </div>
-          <div>
+          <div className='text-sm'>
             {note?.title}
           </div>
         </div>));
 
       return (
         <FolderComponent 
+          key={folder?._id}
           folder={folder}
           notes={noteElements}
+          updateFolderName={updateFolderName}
+          moveNoteToFolder={moveNoteToFolder}
         />
       )
     })
@@ -205,20 +242,26 @@ function App() {
   }
 
   function renderTopLevelNotes(){
+
+    function handleDragStart(event : any, note : any){
+      event.dataTransfer.setData("application/json", JSON.stringify(note));
+    }
+
     return (
       notes.map(note => {
         
       if(note.folder === "")
-      return <div className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
+      return <div
+      draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
       t gap-1 pe-2
       " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
       onClick={()=>openNote(note?._id)}
-      key={note?._id}
-      >
+      key={note?._id}>
         
         {/* <div>
           <BsDot className='w-4 h-4 text-stone-900'/>
         </div> */}
+        <AiOutlineFileText className='w-4 h-4 text-stone-900'/>
         <div>
           {note?.title}
         </div>
@@ -277,13 +320,37 @@ function App() {
     setPreferences(old => newPref);
   }
   
+  function moveNoteToFolder(folderID : string, note : Note){
+    const updatedNotes = [...notes];
+    const noteToChange = updatedNotes.find((aNote : Note) => aNote._id === note._id);
+    if(noteToChange){
+      noteToChange.folder = folderID;
+      setNotes(updatedNotes);
+      updateNote(noteToChange);
+      //setFolders(old => old);
+    }
+    
+  }
+
+  function moveNoteOutOfFolder(note : Note){
+    const updatedNotes = [...notes];
+    const noteToChange = updatedNotes.find((aNote : Note) => aNote._id === note._id);
+    if(noteToChange){
+      noteToChange.folder = "";
+      setNotes(updatedNotes);
+      updateNote(noteToChange);
+      //setFolders(old => old);
+    }
+    
+  }
+  
   return (
     <div className="App">
       <ConfirmDeleteModal showModal={showDeleteModal} closeModal={toggleDeleteModal} deleteNote={handleDeleteNote} workingNoteTitle={workingNote?.title}/>
       <div className='flex flex-row justify-start items-start w-full h-[100vh]'>
 
-        <Sidebar renderTopLevelNotes={renderTopLevelNotes} folders={folders} initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}/>
-        
+        <Sidebar moveNoteOutOfFolder={moveNoteOutOfFolder}  notes={notes}  renderTopLevelNotes={renderTopLevelNotes} folders={folders} initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}
+        initializeNewFolder={initializeNewFolder}/>
         <div className={`flex-grow p-2 flex flex-col h-full ${preferences?.editorWidth  + " " + preferences?.editorPosition}`}>
           <div className='flex w-full justify-between items-center gap-3 pe-5 bg-stone-50'>
           <div className='w-3/4 max-w-[600px]'>
