@@ -178,12 +178,11 @@ function App() {
   }
   
   function initializeNewFolder(folderName : string){
-
     if(user?.email){
       console.log("New folder!");
       createFolder(user.email, folderName).then((response: any) => 
       { 
-        const newFolderObject : Folder = {_id: response.data.insertedId, name: folderName};
+        const newFolderObject : Folder = {_id: response.data.insertedId, name: response.data.folderName};
         setFolders(folders => [...folders, newFolderObject]);
         //add it to the notes state, and THEN set it as the working note!
         //setFolders(folders => [...folders, response?.data.newNote as Note]);
