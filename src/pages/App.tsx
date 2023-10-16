@@ -32,6 +32,7 @@ function App() {
   const [folderToDelete, setFolderToDelete] = useState<Folder>();
   const [preferences, setPreferences] = useState<Preferences>();
   const [folders, setFolders] = useState<Folder[]>([]);
+  const [noteNameInputError, setNoteNameInputError] = useState(0);
   const navigate = useNavigate();
 
 
@@ -84,6 +85,15 @@ function App() {
     }, 3000);
     return () => clearInterval(changeTitleInterval);
   },[lastTitleChange])
+
+  useEffect(()=>{
+    if(workingNote){
+      if(workingNote?.title?.length < 4){
+        setNoteNameInputError(1);
+      }
+      else setNoteNameInputError(0);
+    }
+  },[workingNote?.title])
 
   //2.5 second delete note button cooldown!@#$@!#$!@
   useEffect(()=>{
@@ -169,7 +179,6 @@ function App() {
         //add it to the notes state, and THEN set it as the working note!
         setNotes(notes => [...notes, response?.data.newNote as Note]);
         setWorkingNote(response?.data.newNote as Note);
-        //performTitleChange();
         refreshNoteList(false);
         setNewNoteCooldown(true);
       });
@@ -184,12 +193,6 @@ function App() {
       { 
         const newFolderObject : Folder = {_id: response.data.insertedId, name: response.data.folderName};
         setFolders(folders => [...folders, newFolderObject]);
-        //add it to the notes state, and THEN set it as the working note!
-        //setFolders(folders => [...folders, response?.data.newNote as Note]);
-        //setWorkingNote(response?.data.newNote as Note);
-        //performTitleChange();
-        //refreshNoteList(false);
-        //setNewNoteCooldown(true);
       });
 
     }
@@ -227,7 +230,6 @@ function App() {
     function handleDragStart(event : any, note : any){
       event.dataTransfer.setData("application/json", JSON.stringify(note));
     }
-
 
     const elements = folders.map(folder => {
     
@@ -268,7 +270,6 @@ function App() {
 
     return (
       notes.map(note => {
-        
       if(note.folder === "")
       return <div
       draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
@@ -299,7 +300,6 @@ function App() {
   //changes the value so the input box value changes, but NOTHING else updates (no DB or sidebar update!!!)
   function handleTitleInput(event : any){
     event.preventDefault();
-    //console.log(event?.target.value);
     setLastTitleChange(new Date());
     setConfirmTitle(true);
     setWorkingNote({...workingNote, title: event?.target.value} as Note);
@@ -307,11 +307,12 @@ function App() {
 
   //confirms the title change by changing the value in the notes state and the DB
   function performTitleChange(){
-    if(workingNote){
+    if(workingNote && workingNote?.title?.length > 3){
       updateNoteTitle(workingNote?._id, workingNote?.title);
       setConfirmTitle(false);
     }
   }
+  
 
   function handleDeleteNote(){
     if(workingNote){
@@ -323,17 +324,18 @@ function App() {
     else{
       setDisableDelete(true);
     }
-    //setWorkingNote(notes[0] || undefined);
   }
 
   function handleTitleInputKeyPress(event : any) {
     if(event.key === "Enter"){
       performTitleChange();
     }
+    else if(event.key === "Escape"){
+      window.blur();
+    }
   }
 
   function handlePreferenceUpdate(newPref : Preferences){
-    console.log(newPref);
     setPreferences(old => newPref);
   }
   
@@ -344,7 +346,6 @@ function App() {
       noteToChange.folder = folderID;
       setNotes(updatedNotes);
       updateNote(noteToChange);
-      //setFolders(old => old);
     }
     
   }
@@ -356,7 +357,6 @@ function App() {
       noteToChange.folder = "";
       setNotes(updatedNotes);
       updateNote(noteToChange);
-      //setFolders(old => old);
     }
     
   }
@@ -382,18 +382,22 @@ function App() {
           <div className='w-3/4 max-w-[600px]'>
             <input className='text-3xl pt-1 outline-none w-full max-w-[600px] text-stone-950 bg-stone-50' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}
             onKeyDown={handleTitleInputKeyPress}/>
-            <div className='text-stone-400 text-[0.75rem] h-4'>
+            <div className={`text-[0.75rem] h-4 ${noteNameInputError === 1 ? 'text-red-600' : 'text-stone-400'}`}>
             {
-              confirmTitle ?
+              (confirmTitle && noteNameInputError !== 1) ?
               <>{32 - (workingNote?.title?.length || 0)} characters remaining...</>
               :
               <></>
             }
+            {noteNameInputError === 1 ?
+            <>Please enter at least {4 - (workingNote?.title?.length || 0)} more character{workingNote?.title?.length === 3 ? '' : 's'}...</>
+            :
+            <></>}
             </div>
           </div>
           {
           confirmTitle ?
-          <button className='flex hover:bg-stone-200 px-2 py-1 rounded-lg content-center items-center' onClick={performTitleChange}>
+          <button className='flex hover:bg-stone-200 px-2 py-1 rounded-md content-center items-center' onClick={performTitleChange}>
             <AiOutlineCheck /> confirm
           </button>
           : 

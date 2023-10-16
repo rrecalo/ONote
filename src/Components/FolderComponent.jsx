@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react'
 import { AiOutlineFolder, AiFillDelete, AiOutlineFolderOpen } from 'react-icons/ai'
 import { HiOutlinePencil } from 'react-icons/hi'
@@ -5,19 +6,20 @@ import { HiOutlinePencil } from 'react-icons/hi'
 const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, toggleDeleteFolderModal, ...props}) => {
 
   const [folderName, setFolderName] = useState(folder?.name);
+  const [ originalName, setOriginalName] = useState(folder?.name);
   const [editingName, setEditingName] = useState(false);
   const [lastNameChange, setLastNameChange] = useState();
   const [isHover, setHover] = useState();
   const myInputRef = useRef(null);
   const [expanded, setExpanded] = useState(true);
-
+  const [inputError, setInputError] = useState("");
 
   useEffect(()=>{
     const changeFolderNameInterval = setTimeout(()=>{
       if(lastNameChange){
         changeFolderName();
         }
-    }, 3000);
+    }, 5000);
     return () => clearInterval(changeFolderNameInterval);
   },[lastNameChange])
 
@@ -28,6 +30,15 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
       }
     }
   },[editingName]);
+
+  useEffect(()=>{
+    if(folderName.length <= 3){
+      setInputError("Change not saved - name must be at least 4 characters...");
+    }
+    else if(folderName.length >= 4 && inputError){
+      setInputError("");
+    }
+  }, [folderName])
 
   useEffect(()=>{
     const editingTimeout = setTimeout(()=>{
@@ -41,26 +52,27 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
     return () => clearInterval(editingTimeout);
   }, [editingName]);
 
-
-  useEffect(()=>{
-    const saveFolderInterval = setTimeout(()=>{
-      if(lastNameChange){
-        changeFolderName();
-      }
-    }, 3000);
-    return () => clearInterval(saveFolderInterval);
-  }, [lastNameChange]);
-
-
   function changeFolderName(){
-    if(folderName && folder){
+    if(folderName.length > 3 && folder){
       updateFolderName(folder, folderName);
+      setOriginalName(folderName);
       setLastNameChange(undefined);
       setEditingName(false);
     }
+    else{
+      discardNameChanges();
+    }
+
   };
 
+  function discardNameChanges(){
+    setFolderName(originalName);
+    setLastNameChange(undefined);
+    setEditingName(false);
+  }
+
   function handleFolderNameInputChange(event){
+
     setLastNameChange(new Date());
     setFolderName(event.target.value);
     event.preventDefault();
@@ -79,8 +91,13 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
 
   function handleInputKeyDown(event){
     if(event.key === "Enter"){
-      changeFolderName();
-      setEditingName(false);
+      if(folderName.length <= 3) return;
+      else{
+        changeFolderName();
+      }
+    }
+    else if(event.key === "Escape"){
+      discardNameChanges();
     }
   }
 
@@ -118,7 +135,6 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
         :
         <AiOutlineFolder className='text-stone-600 w-4 h-4'/>
         }
-      
       {/* <input value={folderName} minLength={1} className='outline-none'
       onChange={handleFolderNameInputChange}/>
        */}
@@ -127,18 +143,19 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
         <div className='w-full'>
           {
           editingName ? 
-          <input type="text" ref={myInputRef} spellCheck={false} className='bg-transparent outline-none w-full' maxLength={18} value={folderName} onChange={handleFolderNameInputChange}
+          <input type="text" ref={myInputRef} spellCheck={false} className={`bg-transparent outline-none w-full`} maxLength={18} value={folderName} onChange={handleFolderNameInputChange}
           onKeyDown={handleInputKeyDown}/>
           :
           <div className='w-auto'>
             {folderName}
           </div>
           } 
+
         </div>
         <div className='flex justify-center items-center w-2/12'>
         {
         isHover ?
-        <div className='flex w-full h-full justify-start gap-1 items-center'>
+        <div className='flex w-full h-full justify-start gap-1 items-start'>
           <AiFillDelete className='text-red-600' onClick={handleDeleteClicked}/>
           <HiOutlinePencil className='text-stone-500' onClick={toggleEditingName}/>
         </div>
@@ -146,9 +163,12 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
         }
         </div>
       </div>
+      
       </div>
+      <p className='pl-5 text-red-600 text-[0.75rem] w-full'>{inputError}</p>
       {expanded ? notes :
        <></>}
+       
     </div>
   )
 }
