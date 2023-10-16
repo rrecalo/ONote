@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {AiOutlineFileText, AiOutlinePlus} from 'react-icons/ai';
 import PreferenceSelector from './PreferenceSelector';
 
 const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNoteCooldown, handlePref, pref, folders, initializeNewFolder, notes, moveNoteOutOfFolder, ...props}) => {
@@ -10,11 +9,6 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
   const [noteCreation, setNoteCreation] = useState(false);
   const [noteNameInput, setNoteNameInput] = useState("");
   const [folderNameInput, setFolderNameInput] = useState("");
-  const [children, setChildren] = useState([]);
-  
-  useEffect(()=>{
-    setChildren(renderNoteList(folders));
-  }, [notes, folders])
 
   useEffect(()=>{
     if(confirmAdd){
