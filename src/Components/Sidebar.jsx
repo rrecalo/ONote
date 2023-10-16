@@ -1,12 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import PreferenceSelector from './PreferenceSelector';
+import { AiOutlineFolder, AiOutlineFolderAdd, AiOutlinePlus, AiOutlineFileText } from 'react-icons/ai';
 
 const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNoteCooldown, handlePref, pref, folders, initializeNewFolder, notes, moveNoteOutOfFolder, ...props}) => {
 
+
   const [isHoveringAdd, setIsHoveringAdd] = useState(false);
   const [confirmAdd, setConfirmAdd] = useState(false);
-  const [folderCreation, setFolderCreation] = useState(false);
-  const [noteCreation, setNoteCreation] = useState(false);
+  //undefined/null for neither -> 0 for Note || 1 for Folder
+  const [creationType, setCreationType] = useState();
+  const [isCreating, setIsCreating] = useState(false);
   const [noteNameInput, setNoteNameInput] = useState("");
   const [folderNameInput, setFolderNameInput] = useState("");
 
@@ -19,26 +22,10 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
     }
   },[confirmAdd]);
 
-  function handleNewNoteClick(event){
-    event.preventDefault();
-    if(!noteCreation){
-      setNoteCreation(true);
-      if(folderCreation) setFolderCreation(false);
-    }
-  }
-
-  function handleNewFolderClick(event){
-    event.preventDefault();
-    if(!folderCreation){
-      setFolderCreation(true);
-      if(noteCreation) setNoteCreation(false);
-    }
-  }
-
   function handleNewNoteSubmit(event){
     if(event.key === "Enter"){
       initializeNewNote(event.target.value);
-      setNoteCreation(false);
+      //setNoteCreation(false);
       setNoteNameInput("");
     }
   }
@@ -46,7 +33,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
   function handleNewFolderSubmit(event){
     if(event.key === "Enter"){
       initializeNewFolder(event.target.value);
-      setFolderCreation(false);
+      //setFolderCreation(false);
       setFolderNameInput("");
     }
   }
@@ -58,6 +45,10 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
       console.log("note from a folder!");
     }
     else console.log("note from no folder!");
+  }
+
+  function updateCreationType(choice){
+    setCreationType(choice)
   }
 
   return (
@@ -93,12 +84,13 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
           <div 
             onDrop={handleFolderDrop} onDragOver={(e)=>{e.preventDefault()}}
             onMouseEnter={() => setIsHoveringAdd(true)}
-            onMouseLeave={() => {setIsHoveringAdd(false); setNoteCreation(false); setFolderCreation(false);}}
-            className={`mt-10 flex h-[20%] w-full justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
+            onMouseLeave={() => {setIsHoveringAdd(false); setIsCreating(false); setCreationType(undefined);}}
+            onClick={() => {setIsCreating(true)}}
+            className={`mt-5 flex h-[10%] w-full justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
              {
               isHoveringAdd  && !newNoteCooldown  ? 
                 <div className='w-full h-full'>
-                  <div onClick={handleNewNoteClick} className='flex justify-center items-center bg-stone-100 w-full h-1/2'>
+                  {/* <div onClick={handleNewNoteClick} className='flex justify-start items-start bg-stone-100 w-full h-1/2'>
                   {noteCreation ?
                   <input className='outline-none' placeholder='Note Name...' maxLength={18} value={noteNameInput}
                   onChange={(e)=>setNoteNameInput(e.target.value)} onKeyDown={handleNewNoteSubmit}/>
@@ -114,7 +106,50 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
                   :
                   <>New Folder</>
                   }
-                  </div>
+                  </div> */}
+                  {
+                    creationType === 0 ?
+                    <div className='flex flex-row gap-1 justify-start items-center pl-3 text-base font-light text-stone-800'>
+                      <AiOutlineFileText className='w-4 h-4'/>
+                      <input autoFocus id="new-name-input" className='outline-none bg-transparent' placeholder='Note Name...' maxLength={18} value={noteNameInput}
+                      onChange={(e)=>setNoteNameInput(e.target.value)} onKeyDown={handleNewNoteSubmit}/>
+                    </div>
+                    :
+                    <></>
+                  }
+                  {
+                    creationType === 1 ?
+                    <div className='flex flex-row gap-1 justify-start items-center pl-3 text-base font-light text-stone-800'>
+                    <AiOutlineFolder className='w-4 h-4'/>
+                    <input autoFocus id="new-folder-input" className='outline-none bg-transparent' placeholder='Folder Name...' maxLength={18} value={folderNameInput}
+                    onChange={(e)=>setFolderNameInput(e.target.value)} onKeyDown={handleNewFolderSubmit}/>
+                    </div>
+                    :
+                    <></>
+                  }
+
+                  {(isCreating && creationType === undefined) ?
+                    <div className='flex flex-col h-full justify-start items-start pl-3 text-base font-light text-stone-800' >
+                      <div className='flex items-center gap-1 w-full p-1' onClick={() => {updateCreationType(0)}}>
+                        <AiOutlineFileText className='w-4 h-4'/>
+                        Note
+                      </div>
+                      <div className='flex items-center gap-1 w-full p-1' onClick={() => {updateCreationType(1)}}>
+                      <AiOutlineFolder className='w-4 h-4'/>
+                        Folder
+                      </div>
+                    </div>
+                    :
+                    <></>
+                  }
+                  {!isCreating ?
+                    <div className='flex justify-start items-center gap-1 pl-3 text-sm font-light text-stone-600' >
+                      <AiOutlinePlus className='w-3 h-3 text-stone-600'/>
+                      create new
+                    </div>
+                    :
+                    <></>
+                  }
                   
                 </div>
                 : 

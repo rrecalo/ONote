@@ -240,7 +240,6 @@ function App() {
         onClick={(e)=>{e.stopPropagation(); openNote(note?._id)}}
         key={note?._id}>
           
-          {/* <BsTextLeft className='w-4 h-4 text-stone-900'/> */}
           <AiOutlineFileText className={`w-4 h-4
           + ${workingNote?._id === note._id ? 'text-stone-950' : 'text-stone-600'}`} />
           <div className='text-sm'>
@@ -279,11 +278,8 @@ function App() {
       onClick={()=>openNote(note?._id)}
       key={note?._id}>
         
-        {/* <div>
-          <BsDot className='w-4 h-4 text-stone-900'/>
-        </div> */}
-        {/* <AiOutlineFileText className='w-4 h-4 text-stone-900'/> */}
-        <BsTextLeft className='w-4 h-4 text-stone-900'/>
+        <AiOutlineFileText className={`w-4 h-4
+          + ${workingNote?._id === note._id ? 'text-stone-950' : 'text-stone-600'}`} />
         <div>
           {note?.title}
         </div>
