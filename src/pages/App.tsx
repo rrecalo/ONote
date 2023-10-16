@@ -15,6 +15,7 @@ import { Folder } from '../types/Folder';
 import FolderComponent from '../Components/FolderComponent';
 import { useNavigate } from 'react-router-dom';
 import ConfirmDeleteFolderModal from '../Components/ConfirmDeleteFolderModal';
+import {motion, Reorder} from 'framer-motion';
 
 
 
@@ -235,9 +236,11 @@ function App() {
     
       const notesToRender = notes.filter(note => note.folder === folder._id);  
       const noteElements = notesToRender.map(note => (
-        <div
+        <motion.div
+        initial={{opacity:0, y:-5}}
+        animate={{opacity:1, y:0}}
         draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
-        t gap-1 pe-2 + ${workingNote?._id === note._id ? 'bg-transparent font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
+        t gap-1 pe-2 + ${workingNote?._id === note._id ? 'font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
         onClick={(e)=>{e.stopPropagation(); openNote(note?._id)}}
         key={note?._id}>
           
@@ -246,17 +249,18 @@ function App() {
           <div className='text-sm'>
             {note?.title}
           </div>
-        </div>));
+        </motion.div>));
+
 
       return (
         <FolderComponent 
-          key={folder?._id}
-          folder={folder}
-          notes={noteElements}
-          updateFolderName={updateFolderName}
-          moveNoteToFolder={moveNoteToFolder}
-          toggleDeleteFolderModal={toggleDeleteFolderModal}
-        />
+      key={folder?._id}
+      folder={folder}
+      notes={noteElements}
+      updateFolderName={updateFolderName}
+      moveNoteToFolder={moveNoteToFolder}
+      toggleDeleteFolderModal={toggleDeleteFolderModal}
+      />
       )
     })
     return elements;
@@ -271,7 +275,9 @@ function App() {
     return (
       notes.map(note => {
       if(note.folder === "")
-      return <div
+      return <motion.div
+      initial={{opacity:0, x:-5}}
+      animate={{opacity:1, x:0}}
       draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
       t gap-1 pe-2
       " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
@@ -283,7 +289,7 @@ function App() {
         <div>
           {note?.title}
         </div>
-      </div>
+      </motion.div>
       else
         return null
       })
@@ -374,26 +380,32 @@ function App() {
       deleteFolder={handleDeleteFolder} folder={folderToDelete} />
       <div className='flex flex-row justify-start items-start w-full h-[100vh]'>
         <div className='sm:w-1/4 lg:w-3/12 xl:w-2/12 h-full'>
-          <Sidebar moveNoteOutOfFolder={moveNoteOutOfFolder}  notes={notes}  renderTopLevelNotes={renderTopLevelNotes} folders={folders} initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}
+          <Sidebar setFolders={setFolders} moveNoteOutOfFolder={moveNoteOutOfFolder}  notes={notes}  renderTopLevelNotes={renderTopLevelNotes} folders={folders} initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}
           initializeNewFolder={initializeNewFolder}/>
         </div>
         <div className={`flex-grow p-2 flex flex-col h-full ${preferences?.editorWidth  + " " + preferences?.editorPosition}`}>
           <div className='flex w-full justify-between items-center gap-3 pe-5 bg-stone-50'>
           <div className='w-3/4 max-w-[600px]'>
-            <input className='text-3xl pt-1 outline-none w-full max-w-[600px] text-stone-950 bg-stone-50' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}
+            <input spellCheck={false} className='text-3xl pt-1 outline-none w-full max-w-[600px] text-stone-950 bg-stone-50' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}
             onKeyDown={handleTitleInputKeyPress}/>
-            <div className={`text-[0.75rem] h-4 ${noteNameInputError === 1 ? 'text-red-600' : 'text-stone-400'}`}>
+            <motion.div 
+             className={`text-[0.75rem] h-4 ${noteNameInputError === 1 ? 'text-red-600' : 'text-stone-400'}`}>
             {
               (confirmTitle && noteNameInputError !== 1) ?
-              <>{32 - (workingNote?.title?.length || 0)} characters remaining...</>
+              <motion.div
+              initial={{opacity:0.5, y:-3}} 
+              animate={{opacity:1, y:0}}
+              >{32 - (workingNote?.title?.length || 0)} characters remaining...</motion.div>
               :
               <></>
             }
             {noteNameInputError === 1 ?
-            <>Please enter at least {4 - (workingNote?.title?.length || 0)} more character{workingNote?.title?.length === 3 ? '' : 's'}...</>
+            <motion.div
+            initial={{opacity:0.5, y:-3}} 
+            animate={{opacity:1, y:0}}>Please enter at least {4 - (workingNote?.title?.length || 0)} more character{workingNote?.title?.length === 3 ? '' : 's'}...</motion.div>
             :
             <></>}
-            </div>
+            </motion.div>
           </div>
           {
           confirmTitle ?

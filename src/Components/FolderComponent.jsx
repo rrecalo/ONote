@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { AiOutlineFolder, AiFillDelete, AiOutlineFolderOpen } from 'react-icons/ai'
 import { HiOutlinePencil } from 'react-icons/hi'
+import {motion} from 'framer-motion'
 
 const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, toggleDeleteFolderModal, ...props}) => {
 
@@ -13,6 +14,7 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
   const myInputRef = useRef(null);
   const [expanded, setExpanded] = useState(true);
   const [inputError, setInputError] = useState("");
+  const [dragging, setDragging] = useState(false);
 
   useEffect(()=>{
     const changeFolderNameInterval = setTimeout(()=>{
@@ -33,7 +35,7 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
 
   useEffect(()=>{
     if(folderName.length <= 3){
-      setInputError("Change not saved - name must be at least 4 characters...");
+      setInputError("Unsaved changes...name must be at least 4 characters");
     }
     else if(folderName.length >= 4 && inputError){
       setInputError("");
@@ -117,7 +119,7 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
   }
 
   function toggleExpanded(){
-    if(!editingName){
+    if(!editingName && !dragging){
       if(expanded){
         setExpanded(false);
       }
@@ -126,7 +128,11 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
   }
 
   return (
-    <div className={`text-stone-600 pl-3 w-full cursor-pointer
+    <motion.div
+    key={folder?._id}
+    initial={{opacity:0, x:25}}
+    animate={{opacity:1, x:0}}
+    className={`text-stone-600 pl-3 w-full cursor-pointer
     t gap-1 pe-2 mt-1 text-base select-none`} onDrop={handleDrop} onDragOver={(e)=>{e.preventDefault()}}
     onClick={toggleExpanded}>
       <div className='flex justify-start items-center w-full gap-2 cursor-default'>
@@ -165,11 +171,16 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
       </div>
       
       </div>
-      <p className='pl-5 text-red-600 text-[0.75rem] w-full'>{inputError}</p>
+      {inputError !== "" ?
+      <motion.p className='pl-5 text-red-600 text-[0.75rem] w-full' initial={{x:-5, opacity:0.5}} animate={{x:0, opacity:1}}
+      >{inputError}</motion.p>
+      : <></> }
+      <motion.div>
       {expanded ? notes :
        <></>}
-       
-    </div>
+      </motion.div>
+    <hr className='mt-1'/>
+    </motion.div>
   )
 }
 
