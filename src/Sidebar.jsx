@@ -14,7 +14,6 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
   
   useEffect(()=>{
     setChildren(renderNoteList(folders));
-    console.log(children);
   }, [notes, folders])
 
   useEffect(()=>{
@@ -68,7 +67,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
   }
 
   return (
-    <div id="sidebar" className='select-none max-w-1/4 sm:max-w-1/4 lg:max-w-1/6 sm:min-w-[232px] h-full 
+    <div id="sidebar" className='select-none w-full h-full 
     bg-stone-50 flex flex-col justify-start items-center pt-10'
     
     >
@@ -88,11 +87,8 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
           <div className='h-10'>
           <PreferenceSelector handlePreferenceChange={handlePref} preferences={pref}/>
           </div>
-          <div id="your-notes-section" className='flex flex-col justify-center items-start gap-1 mt-5 w-full'>
+          <div id="your-notes-section" className='flex flex-col justify-center items-start gap-1 mt-5 max-w-full w-full'>
             <div className='flex flex-row items-center text-lg text-stone-800 text-left gap-1 pl-3'>
-              {/* <div>
-                <AiOutlineFileText className='text-stone-600 w-4 h-4'/>
-              </div> */}
               <div className='font-bold text-xl text-stone-600'>
                 Notes
               </div>
@@ -104,7 +100,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
             onDrop={handleFolderDrop} onDragOver={(e)=>{e.preventDefault()}}
             onMouseEnter={() => setIsHoveringAdd(true)}
             onMouseLeave={() => {setIsHoveringAdd(false); setNoteCreation(false); setFolderCreation(false);}}
-            className={`mt-10 flex h-[20%] w-[100%] justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
+            className={`mt-10 flex h-[20%] w-full justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
              {
               isHoveringAdd  && !newNoteCooldown  ? 
                 <div className='w-full h-full'>

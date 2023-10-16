@@ -43,3 +43,9 @@ export async function deleteNote(note : Note, email: string | undefined){
     let endpoint = "/deleteNote";
     return axios.delete(BASE_URL + endpoint, {params:{_id: note._id, email : email}}).then((response) => {return(response)});
 }
+
+export async function deleteFolder(email: string | undefined, folder : Folder){
+    console.log(email, folder);
+    let endpoint = "/deleteFolder";
+    return axios.delete(BASE_URL + endpoint, {params:{email : email, _id: folder?._id, }}).then((response) => {return(response)});
+}

@@ -2,7 +2,7 @@ import React , {useEffect, useState} from 'react';
 import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import TextEditor from './TextEditor';
-import {getUserNotes, createNote, deleteNote, getUserFolders, updateFolder, createFolder} from './api/userAPI';
+import {getUserNotes, createNote, deleteNote, getUserFolders, updateFolder, createFolder, deleteFolder} from './api/userAPI';
 import { Note } from './types/Note'
 import { updateNote } from './api/userAPI';
 import {AiOutlineCheck, AiOutlineFileText} from 'react-icons/ai';
@@ -209,6 +209,14 @@ function App() {
       event.dataTransfer.setData("application/json", JSON.stringify(note));
     }
 
+    function handleDeleteFolder(folder : Folder){
+      if(true){
+        deleteFolder(user?.email, folder).then(res=>console.log(res?.data));
+        setFolders(oldFolders => oldFolders.filter(f => f._id !== folder?._id));
+      }
+      else{return;}
+    }
+
     const elements = folders.map(folder => {
     
       const notesToRender = notes.filter(note => note.folder === folder._id);  
@@ -236,6 +244,7 @@ function App() {
           notes={noteElements}
           updateFolderName={updateFolderName}
           moveNoteToFolder={moveNoteToFolder}
+          handleDeleteFolder={handleDeleteFolder}
         />
       )
     })
@@ -355,9 +364,10 @@ function App() {
     <div className="App">
       <ConfirmDeleteModal showModal={showDeleteModal} closeModal={toggleDeleteModal} deleteNote={handleDeleteNote} workingNoteTitle={workingNote?.title}/>
       <div className='flex flex-row justify-start items-start w-full h-[100vh]'>
-
-        <Sidebar moveNoteOutOfFolder={moveNoteOutOfFolder}  notes={notes}  renderTopLevelNotes={renderTopLevelNotes} folders={folders} initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}
-        initializeNewFolder={initializeNewFolder}/>
+        <div className='sm:w-1/4 lg:w-3/12 xl:w-2/12 h-full'>
+          <Sidebar moveNoteOutOfFolder={moveNoteOutOfFolder}  notes={notes}  renderTopLevelNotes={renderTopLevelNotes} folders={folders} initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}
+          initializeNewFolder={initializeNewFolder}/>
+        </div>
         <div className={`flex-grow p-2 flex flex-col h-full ${preferences?.editorWidth  + " " + preferences?.editorPosition}`}>
           <div className='flex w-full justify-between items-center gap-3 pe-5 bg-stone-50'>
           <div className='w-3/4 max-w-[600px]'>

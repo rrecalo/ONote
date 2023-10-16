@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { AiOutlineFolder } from 'react-icons/ai'
+import { AiOutlineFolder, AiFillDelete } from 'react-icons/ai'
 import { HiOutlinePencil } from 'react-icons/hi'
 
-const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, ...props}) => {
+const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, handleDeleteFolder, ...props}) => {
 
   const [folderName, setFolderName] = useState(folder?.name);
   const [editingName, setEditingName] = useState(false);
@@ -76,10 +76,14 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, ...
     else console.log("note from current folder!");
   }
 
+  function handleDeleteClicked(){
+    handleDeleteFolder(folder);
+  }
+
   return (
     <div className={`text-stone-600 pl-3 w-full cursor-pointer
     t gap-1 pe-2 mt-1 text-base select-none`} onDrop={handleDrop} onDragOver={(e)=>{e.preventDefault()}}>
-      <div className='flex justify-start items-center gap-2 cursor-default'>
+      <div className='flex justify-start items-center w-full gap-2 cursor-default'>
         <AiOutlineFolder className='text-stone-600 w-4 h-4'/>
 
       {/* <input value={folderName} minLength={1} className='outline-none'
@@ -87,7 +91,7 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, ...
        */}
       <div className='flex justify-start items-center w-full' 
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-        <div className='w-[170px]'>
+        <div className='w-full'>
           {
           editingName ? 
           <input type="text" ref={myInputRef} spellCheck={false} className='bg-transparent outline-none w-full' maxLength={18} value={folderName} onChange={handleFolderNameInputChange}
@@ -98,11 +102,13 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, ...
           </div>
           } 
         </div>
-        <div className='flex justify-center items-center w-1/12'>
+        <div className='flex justify-center items-center w-2/12'>
         {
-        isHover?
-          <HiOutlinePencil className='text-stone-500 w-full h-full' onClick={toggleEditingName}/>
-
+        isHover ?
+        <div className='flex w-full h-full justify-start gap-1 items-center'>
+          <AiFillDelete className='text-red-600' onClick={handleDeleteClicked}/>
+          <HiOutlinePencil className='text-stone-500' onClick={toggleEditingName}/>
+        </div>
         : <></>
         }
         </div>
