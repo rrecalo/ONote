@@ -86,7 +86,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
             onMouseEnter={() => setIsHoveringAdd(true)}
             onMouseLeave={() => {setIsHoveringAdd(false); setIsCreating(false); setCreationType(undefined);}}
             onClick={() => {setIsCreating(true)}}
-            className={`mt-5 flex h-[10%] w-full justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
+            className={`mt-5 flex h-[20%] w-full justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
              {
               isHoveringAdd  && !newNoteCooldown  ? 
                 <div className='w-full h-full'>
@@ -111,7 +111,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
                     creationType === 0 ?
                     <div className='flex flex-row gap-1 justify-start items-center pl-3 text-base font-light text-stone-800'>
                       <AiOutlineFileText className='w-4 h-4'/>
-                      <input autoFocus id="new-name-input" className='outline-none bg-transparent' placeholder='Note Name...' maxLength={18} value={noteNameInput}
+                      <input autoFocus id="new-name-input" className='outline-none bg-transparent w-full' placeholder='Note Name...' maxLength={18} value={noteNameInput}
                       onChange={(e)=>setNoteNameInput(e.target.value)} onKeyDown={handleNewNoteSubmit}/>
                     </div>
                     :
@@ -121,7 +121,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
                     creationType === 1 ?
                     <div className='flex flex-row gap-1 justify-start items-center pl-3 text-base font-light text-stone-800'>
                     <AiOutlineFolder className='w-4 h-4'/>
-                    <input autoFocus id="new-folder-input" className='outline-none bg-transparent' placeholder='Folder Name...' maxLength={18} value={folderNameInput}
+                    <input autoFocus id="new-folder-input" className='outline-none bg-transparent w-full' placeholder='Folder Name...' maxLength={18} value={folderNameInput}
                     onChange={(e)=>setFolderNameInput(e.target.value)} onKeyDown={handleNewFolderSubmit}/>
                     </div>
                     :
@@ -129,12 +129,12 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
                   }
 
                   {(isCreating && creationType === undefined) ?
-                    <div className='flex flex-col h-full justify-start items-start pl-3 text-base font-light text-stone-800' >
-                      <div className='flex items-center gap-1 w-full p-1' onClick={() => {updateCreationType(0)}}>
+                    <div className='flex flex-col h-full justify-around items-start pl-3 text-base font-light text-stone-800' >
+                      <div className='flex items-center gap-1 w-full h-1/2' onClick={() => {updateCreationType(0)}}>
                         <AiOutlineFileText className='w-4 h-4'/>
                         Note
                       </div>
-                      <div className='flex items-center gap-1 w-full p-1' onClick={() => {updateCreationType(1)}}>
+                      <div className='flex items-center gap-1 w-full h-1/2' onClick={() => {updateCreationType(1)}}>
                       <AiOutlineFolder className='w-4 h-4'/>
                         Folder
                       </div>
