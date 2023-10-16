@@ -1,25 +1,24 @@
 import React , {useEffect, useState} from 'react';
 import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
-import LoginButton from './LoginButton';
 import TextEditor from './TextEditor';
 import {getUserNotes, createNote, deleteNote, getUserFolders, updateFolder, createFolder} from './api/userAPI';
 import { Note } from './types/Note'
 import { updateNote } from './api/userAPI';
 import {AiOutlineCheck, AiOutlineFileText} from 'react-icons/ai';
-import {BsDot} from 'react-icons/bs';
 import Sidebar from './Sidebar';
 import DeleteNoteButton from './DeleteNoteButton';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import {Preferences} from './types/Preferences';
 import { Folder } from './types/Folder';
 import FolderComponent from './FolderComponent';
+import { useNavigate } from 'react-router-dom';
 
 
 
 function App() {
 
-  const { user, isAuthenticated, logout } = useAuth0();
+  const { user } = useAuth0();
   const [notes, setNotes] = useState<Note[]>([]);
   const [workingNote, setWorkingNote] = useState<Note>();
   const [confirmTitle, setConfirmTitle] = useState<boolean>(false);
@@ -29,6 +28,8 @@ function App() {
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [preferences, setPreferences] = useState<Preferences>();
   const [folders, setFolders] = useState<Folder[]>([]);
+  const navigate = useNavigate();
+
 
   useEffect(()=>{
     if(user){
@@ -343,6 +344,12 @@ function App() {
     }
     
   }
+
+
+  if(!user){
+    navigate("/login");
+    return <></>;
+  }
   
   return (
     <div className="App">
@@ -383,6 +390,7 @@ function App() {
 
       </div>
     </div>
+
   );
 }
 

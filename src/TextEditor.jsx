@@ -14,10 +14,16 @@ export default function TextEditor({noteId, getNoteById, updateNoteContent, ...p
 
   //when the note id changes, set the content to be equal to respective note id's content
   useEffect(()=>{
-    if(noteId){
-      editorRef.current.setContent(getWorkingNoteContent());
+      //fetch the text content of the current noteId
+    function getWorkingNoteContent(){
+      return getNoteById(noteId)?.text;
     }
-  },[noteId])
+
+    if(noteId && editorRef){
+      editorRef?.current?.setContent(getWorkingNoteContent()  || 
+      "");
+    }
+  },[noteId, getNoteById])
 
 
   //save the editor content into parent's workingNote state
@@ -25,10 +31,7 @@ export default function TextEditor({noteId, getNoteById, updateNoteContent, ...p
     updateNoteContent(noteId, content);
   }
 
-  //fetch the text content of the current noteId
-  function getWorkingNoteContent(){
-    return getNoteById(noteId)?.text;
-  }
+
 
   return (
     <div className='h-full overflow-hidden'>
