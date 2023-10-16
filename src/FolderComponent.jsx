@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { AiOutlineFolder, AiFillDelete } from 'react-icons/ai'
 import { HiOutlinePencil } from 'react-icons/hi'
 
-const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, handleDeleteFolder, ...props}) => {
+const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, toggleDeleteFolderModal, ...props}) => {
 
   const [folderName, setFolderName] = useState(folder?.name);
   const [editingName, setEditingName] = useState(false);
@@ -77,7 +77,7 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, han
   }
 
   function handleDeleteClicked(){
-    handleDeleteFolder(folder);
+    toggleDeleteFolderModal(folder);
   }
 
   return (

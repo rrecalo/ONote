@@ -13,6 +13,7 @@ import {Preferences} from './types/Preferences';
 import { Folder } from './types/Folder';
 import FolderComponent from './FolderComponent';
 import { useNavigate } from 'react-router-dom';
+import ConfirmDeleteFolderModal from './ConfirmDeleteFolderModal';
 
 
 
@@ -25,7 +26,9 @@ function App() {
   const [lastTitleChange, setLastTitleChange] = useState<Date>();
   const [disableDelete, setDisableDelete] = useState<boolean>(false);
   const [newNoteCooldown, setNewNoteCooldown] = useState<boolean>(false);
-  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [showDeleteNoteModal, setShowDeleteNoteModal] = useState<boolean>(false);
+  const [showDeleteFolderModal, setShowDeleteFolderModal] = useState<boolean>(false);
+  const [folderToDelete, setFolderToDelete] = useState<Folder>();
   const [preferences, setPreferences] = useState<Preferences>();
   const [folders, setFolders] = useState<Folder[]>([]);
   const navigate = useNavigate();
@@ -48,13 +51,13 @@ function App() {
       }
     }
 
-    if(showDeleteModal){
+    if(showDeleteNoteModal){
       window.addEventListener('keydown', handleKeyDown);
     }
     return () =>{
       window.addEventListener('keydown', handleKeyDown);
     }
-  }, [showDeleteModal])
+  }, [showDeleteNoteModal])
 
   useEffect(()=>{
     //if there are no notes, we want to make a new one so the editor don't bug out!
@@ -202,6 +205,22 @@ function App() {
     return notes.find((note : Note) => note._id === id);
   }
 
+  function toggleDeleteFolderModal(folder : Folder){
+    setShowDeleteFolderModal(true);
+    setFolderToDelete(folder);
+  }
+
+  function handleDeleteFolder(folder : Folder){
+    if(true){
+      deleteFolder(user?.email, folder).then(res=>console.log(res?.data));
+      setFolders(oldFolders => oldFolders.filter(f => f._id !== folder?._id));
+      setShowDeleteFolderModal(false);
+      setFolderToDelete(undefined);
+    }
+    else{return;}
+  }
+
+
   //for rendering the existing notes in the sidebar!
   function renderNoteList(folders : Array<Folder>){
 
@@ -209,13 +228,6 @@ function App() {
       event.dataTransfer.setData("application/json", JSON.stringify(note));
     }
 
-    function handleDeleteFolder(folder : Folder){
-      if(true){
-        deleteFolder(user?.email, folder).then(res=>console.log(res?.data));
-        setFolders(oldFolders => oldFolders.filter(f => f._id !== folder?._id));
-      }
-      else{return;}
-    }
 
     const elements = folders.map(folder => {
     
@@ -244,7 +256,7 @@ function App() {
           notes={noteElements}
           updateFolderName={updateFolderName}
           moveNoteToFolder={moveNoteToFolder}
-          handleDeleteFolder={handleDeleteFolder}
+          toggleDeleteFolderModal={toggleDeleteFolderModal}
         />
       )
     })
@@ -283,10 +295,10 @@ function App() {
   }
 
   function toggleDeleteModal(){
-    if(showDeleteModal){
-      setShowDeleteModal(false);
+    if(showDeleteNoteModal){
+      setShowDeleteNoteModal(false);
     }
-    else setShowDeleteModal(true);
+    else setShowDeleteNoteModal(true);
   }
 
   //changes the value so the input box value changes, but NOTHING else updates (no DB or sidebar update!!!)
@@ -311,7 +323,7 @@ function App() {
       deleteNote(workingNote as Note, user?.email).then(res=>console.log(res.data?.success));
       setNotes(notes => notes.filter(note => note._id !== workingNote?._id));
       setDisableDelete(true);
-      setShowDeleteModal(false);
+      setShowDeleteNoteModal(false);
     }
     else{
       setDisableDelete(true);
@@ -362,7 +374,9 @@ function App() {
   
   return (
     <div className="App">
-      <ConfirmDeleteModal showModal={showDeleteModal} closeModal={toggleDeleteModal} deleteNote={handleDeleteNote} workingNoteTitle={workingNote?.title}/>
+      <ConfirmDeleteModal showModal={showDeleteNoteModal} closeModal={toggleDeleteModal} deleteNote={handleDeleteNote} workingNoteTitle={workingNote?.title}/>
+      <ConfirmDeleteFolderModal showModal={showDeleteFolderModal} closeModal={() => { setFolderToDelete(undefined); setShowDeleteFolderModal(false); } } 
+      deleteFolder={handleDeleteFolder} folder={folderToDelete} />
       <div className='flex flex-row justify-start items-start w-full h-[100vh]'>
         <div className='sm:w-1/4 lg:w-3/12 xl:w-2/12 h-full'>
           <Sidebar moveNoteOutOfFolder={moveNoteOutOfFolder}  notes={notes}  renderTopLevelNotes={renderTopLevelNotes} folders={folders} initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}
