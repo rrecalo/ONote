@@ -5,7 +5,8 @@ import TextEditor from './TextEditor';
 import {getUserNotes, createNote, deleteNote, getUserFolders, updateFolder, createFolder, deleteFolder} from './api/userAPI';
 import { Note } from './types/Note'
 import { updateNote } from './api/userAPI';
-import {AiOutlineCheck, AiOutlineFileText} from 'react-icons/ai';
+import {AiOutlineCheck, AiOutlineFileText } from 'react-icons/ai';
+import { BsTextLeft } from 'react-icons/bs'
 import Sidebar from './Sidebar';
 import DeleteNoteButton from './DeleteNoteButton';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
@@ -235,15 +236,13 @@ function App() {
       const noteElements = notesToRender.map(note => (
         <div
         draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
-        t gap-1 pe-2
-        " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
-        onClick={()=>openNote(note?._id)}
+        t gap-1 pe-2 + ${workingNote?._id === note._id ? 'bg-transparent font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
+        onClick={(e)=>{e.stopPropagation(); openNote(note?._id)}}
         key={note?._id}>
           
-          <div>
-            <AiOutlineFileText className='w-4 h-4 text-stone-900'/>
-            {/* <BsDot className='w-4 h-4 text-stone-900'/> */}
-          </div>
+          {/* <BsTextLeft className='w-4 h-4 text-stone-900'/> */}
+          <AiOutlineFileText className={`w-4 h-4
+          + ${workingNote?._id === note._id ? 'text-stone-950' : 'text-stone-600'}`} />
           <div className='text-sm'>
             {note?.title}
           </div>
@@ -283,7 +282,8 @@ function App() {
         {/* <div>
           <BsDot className='w-4 h-4 text-stone-900'/>
         </div> */}
-        <AiOutlineFileText className='w-4 h-4 text-stone-900'/>
+        {/* <AiOutlineFileText className='w-4 h-4 text-stone-900'/> */}
+        <BsTextLeft className='w-4 h-4 text-stone-900'/>
         <div>
           {note?.title}
         </div>
