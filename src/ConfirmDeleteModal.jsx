@@ -20,9 +20,11 @@ const ConfirmDeleteModal = ({showModal, closeModal, deleteNote, workingNoteTitle
     function StartTimer(){
         const deleteTimer = setTimeout(()=>{
             setConfirmDelete(true);
-        }, 3000);
+            //3000
+        }, 100);
         setTimer(deleteTimer);
-        setCountdown(3);
+        //3
+        setCountdown(0);
     }
 
     function CancelTimer(){
