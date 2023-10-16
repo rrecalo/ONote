@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {EditorWidth, EditorPosition } from './types/Preferences'
+import {EditorWidth, EditorPosition } from '../types/Preferences'
 
 const PreferenceSelector = ({preferences, handlePreferenceChange}) => {
 

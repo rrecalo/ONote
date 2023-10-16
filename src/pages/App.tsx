@@ -1,20 +1,20 @@
 import React , {useEffect, useState} from 'react';
 import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
-import TextEditor from './TextEditor';
-import {getUserNotes, createNote, deleteNote, getUserFolders, updateFolder, createFolder, deleteFolder} from './api/userAPI';
-import { Note } from './types/Note'
-import { updateNote } from './api/userAPI';
+import TextEditor from '../Components/TextEditor';
+import {getUserNotes, createNote, deleteNote, getUserFolders, updateFolder, createFolder, deleteFolder} from '../api/userAPI';
+import { Note } from '../types/Note'
+import { updateNote } from '../api/userAPI';
 import {AiOutlineCheck, AiOutlineFileText } from 'react-icons/ai';
 import { BsTextLeft } from 'react-icons/bs'
-import Sidebar from './Sidebar';
-import DeleteNoteButton from './DeleteNoteButton';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
-import {Preferences} from './types/Preferences';
-import { Folder } from './types/Folder';
-import FolderComponent from './FolderComponent';
+import Sidebar from '../Components/Sidebar';
+import DeleteNoteButton from '../Components/DeleteNoteButton';
+import ConfirmDeleteModal from '../Components/ConfirmDeleteModal';
+import {Preferences} from '../types/Preferences';
+import { Folder } from '../types/Folder';
+import FolderComponent from '../Components/FolderComponent';
 import { useNavigate } from 'react-router-dom';
-import ConfirmDeleteFolderModal from './ConfirmDeleteFolderModal';
+import ConfirmDeleteFolderModal from '../Components/ConfirmDeleteFolderModal';
 
 
 
@@ -419,23 +419,3 @@ function App() {
 }
 
 export default App;
-
-/**
- * 
- * return (
-              <div className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
-              t gap-1 pe-2
-              " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
-              onClick={()=>openNote(note?._id)}
-              key={note?._id}
-              >
-                
-                <div>
-                  <BsDot className='w-4 h-4 text-stone-900'/>
-                </div>
-                <div>
-                  {note?.title}
-                </div>
-              </div>
-              )
- */

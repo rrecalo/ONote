@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import App from './pages/App';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { Provider } from 'react-redux'
 import store from './store'
-import Login from './Login';
+import Login from './pages/Login';
 import {
   createBrowserRouter,
   RouterProvider,
