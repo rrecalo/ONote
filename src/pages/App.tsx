@@ -269,7 +269,7 @@ function App() {
       const notesToRender = notes.filter(note => note.folder === folder._id);  
       const noteElements = notesToRender.map(note => (
         <motion.div
-        initial={{opacity:0, y:-5}}
+        initial={{opacity:0, y:-5, backgroundColor: "#fafaf9"}}
         animate={{opacity:1, y:0, backgroundColor: "#fafaf9"}}
         whileHover={{backgroundColor: "#e7e5e4", x:0.5}}
         transition={{type:"tween", duration:0.1, ease:"linear"}}

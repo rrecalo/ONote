@@ -72,7 +72,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
           <div 
             onDrop={handleNoteDrop} onDragOver={(e)=>{e.preventDefault()}}
             onMouseEnter={() => setIsHoveringAdd(true)}
-            onMouseLeave={() => {setIsHoveringAdd(false); setIsCreating(false); setCreationType(undefined);}}
+            onMouseLeave={() => {setIsHoveringAdd(false); setIsCreating(false); setCreationType(undefined); setNoteNameInput(""); setFolderNameInput("");}}
             onClick={() => {setIsCreating(true)}}
             className={`mt-5 flex h-[20%] w-full justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
              {
