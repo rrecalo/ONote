@@ -39,6 +39,11 @@ export async function updateFolder(email : string | undefined, folder : Folder){
     return axios.put(BASE_URL + endpoint, {email : email, _id : folder._id, name : folder.name}).then((response) => {return(response)});
 }
 
+export async function updateUserFolders(email : string | undefined, folders : Folder[]){
+    let endpoint = "/updateUserFolders";
+    return axios.put(BASE_URL + endpoint, {email : email, folders: folders}).then((response) => {return(response)});
+}
+
 export async function deleteNote(note : Note, email: string | undefined){
     let endpoint = "/deleteNote";
     return axios.delete(BASE_URL + endpoint, {params:{_id: note._id, email : email}}).then((response) => {return(response)});
