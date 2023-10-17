@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react'
-import { AiOutlineFolder, AiFillDelete, AiOutlineFolderOpen } from 'react-icons/ai'
+import { AiOutlineFolder, AiFillDelete, AiOutlineFolderOpen, AiOutlineCheck } from 'react-icons/ai'
 import { HiOutlinePencil } from 'react-icons/hi'
 import {motion} from 'framer-motion'
 
@@ -129,13 +129,17 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
 
   return (
     <motion.div
+    layout="position"
     key={folder?._id}
     initial={{opacity:0, x:25}}
     animate={{opacity:1, x:0}}
-    className={`text-stone-600 pl-3 w-full cursor-pointer
-    t gap-1 pe-2 mt-1 text-base select-none`} onDrop={handleDrop} onDragOver={(e)=>{e.preventDefault()}}
+    className={`text-stone-600 w-full cursor-pointer
+    t gap-1 mt-1 text-base select-none`} onDrop={handleDrop} onDragOver={(e)=>{e.preventDefault()}}
     onClick={toggleExpanded}>
-      <div className='flex justify-start items-center w-full gap-2 cursor-default'>
+      <motion.div className='flex justify-start items-center w-full gap-2 cursor-default pl-3 pe-2'
+      animate={{backgroundColor: "#fafaf9"}}
+      whileHover={{backgroundColor: "#e7e5e4", x:1}}
+      transition={{type:"tween", duration:0.1, ease:"linear"}}>
         {expanded ? 
         <AiOutlineFolderOpen className='text-stone-600 w-4 h-4'/>
         :
@@ -162,24 +166,28 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
         {
         isHover ?
         <div className='flex w-full h-full justify-start gap-1 items-start'>
-          <AiFillDelete className='text-red-600' onClick={handleDeleteClicked}/>
+          <AiFillDelete className='text-stone-600' onClick={handleDeleteClicked}/>
+          {
+            !editingName ?
           <HiOutlinePencil className='text-stone-500' onClick={toggleEditingName}/>
+          :
+          <AiOutlineCheck className='text-stone-500' onClick={toggleEditingName}/>
+          }
         </div>
         : <></>
         }
         </div>
       </div>
       
-      </div>
+      </motion.div>
       {inputError !== "" ?
-      <motion.p className='pl-5 text-red-600 text-[0.75rem] w-full' initial={{x:-5, opacity:0.5}} animate={{x:0, opacity:1}}
+      <motion.p className='pl-8 text-red-600 text-[0.75rem] w-full' initial={{x:-5, opacity:0.5}} animate={{x:0, opacity:1}}
       >{inputError}</motion.p>
       : <></> }
-      <motion.div>
+      <motion.div className='pl-3'>
       {expanded ? notes :
        <></>}
       </motion.div>
-    <hr className='mt-1'/>
     </motion.div>
   )
 }

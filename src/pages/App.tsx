@@ -238,7 +238,9 @@ function App() {
       const noteElements = notesToRender.map(note => (
         <motion.div
         initial={{opacity:0, y:-5}}
-        animate={{opacity:1, y:0}}
+        animate={{opacity:1, y:0, backgroundColor: "#fafaf9"}}
+        whileHover={{backgroundColor: "#e7e5e4", x:0.5}}
+        transition={{type:"tween", duration:0.1, ease:"linear"}}
         draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
         t gap-1 pe-2 + ${workingNote?._id === note._id ? 'font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
         onClick={(e)=>{e.stopPropagation(); openNote(note?._id)}}
@@ -277,7 +279,9 @@ function App() {
       if(note.folder === "")
       return <motion.div
       initial={{opacity:0, x:-5}}
-      animate={{opacity:1, x:0}}
+      animate={{opacity:1, x:0, backgroundColor: "#fafaf9"}}
+      whileHover={{backgroundColor: "#e7e5e4", x:1}}
+      transition={{type:"tween", duration:0.1, ease:"linear"}}
       draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
       t gap-1 pe-2
       " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
