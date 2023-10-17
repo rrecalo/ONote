@@ -14,33 +14,29 @@ export default function TextEditor({noteId, getNoteById, updateNoteContent, ...p
 
   //when the note id changes, set the content to be equal to respective note id's content
   useEffect(()=>{
-      //fetch the text content of the current noteId
-    function getWorkingNoteContent(){
-      return getNoteById(noteId)?.text;
-    }
 
     if(noteId && editorRef){
-      editorRef?.current?.setContent(getWorkingNoteContent()  || 
-      "");
+      editorRef?.current?.setContent(getWorkingNoteContent());
     }
-  },[noteId, getNoteById])
+  },[noteId])
 
+  function getWorkingNoteContent(){
+    return getNoteById(noteId)?.text;
+  }
 
   //save the editor content into parent's workingNote state
   function handleEditorChange(content, editor){
     updateNoteContent(noteId, content);
   }
 
-
-
   return (
     <div className='h-full overflow-hidden'>
       <Editor
         id="editor"
-        onInit={(evt, editor) => editorRef.current = editor}
+        onInit={(evt, editor) => {editorRef.current = editor; console.log(editor)}}
         onEditorChange={handleEditorChange}
-        //initialValue={getWorkingNoteContent}
-        // value={note?.text}
+        initialValue={() => getWorkingNoteContent()}
+        //ref={editorRef}
         //"<p>This is the initial content of the editor. Some <b>more</b> <i>text</i> could also go in here...</p>"
         init={{
           height: 500,
