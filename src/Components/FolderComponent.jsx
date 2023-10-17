@@ -4,7 +4,7 @@ import { AiOutlineFolder, AiFillDelete, AiOutlineFolderOpen, AiOutlineCheck } fr
 import { HiOutlinePencil } from 'react-icons/hi'
 import {motion} from 'framer-motion'
 
-const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, toggleDeleteFolderModal, ...props}) => {
+const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, toggleDeleteFolderModal, handleDropOnFolder, ...props}) => {
 
   const [folderName, setFolderName] = useState(folder?.name);
   const [ originalName, setOriginalName] = useState(folder?.name);
@@ -105,6 +105,7 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
 
   function handleDrop(event){
     event.preventDefault();
+    console.log(event.dataTransfer);
     const data = JSON.parse(event.dataTransfer.getData("application/json"));
     if(data.folder !== folder?._id){
       moveNoteToFolder(folder?._id, data);
@@ -127,6 +128,16 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
     }
   }
 
+  const handleDragStart = (e, index) => {
+    e.dataTransfer.setData('index', index);
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+  };
+
+
+
   return (
     <motion.div
     layout="position"
@@ -134,8 +145,15 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
     initial={{opacity:0, x:25}}
     animate={{opacity:1, x:0}}
     className={`text-stone-600 w-full cursor-pointer
-    t gap-1 mt-1 text-base select-none`} onDrop={handleDrop} onDragOver={(e)=>{e.preventDefault()}}
-    onClick={toggleExpanded}>
+    t gap-1 mt-1 text-base select-none`} 
+    // onDrop={handleDrop} 
+    // onDragOver={(e)=>{e.preventDefault()}}
+    onClick={toggleExpanded}
+    draggable
+    onDragStart={(e) => handleDragStart(e, folder?.order)}
+    onDragOver={(e) => handleDragOver(e, folder?.order)}
+    onDrop={(e) => handleDropOnFolder(e, folder?.order)}
+    >
       <motion.div className='flex justify-start items-center w-full gap-2 cursor-default pl-3 pe-2'
       animate={{backgroundColor: "#fafaf9"}}
       whileHover={{backgroundColor: "#e7e5e4", x:1}}

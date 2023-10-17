@@ -2,7 +2,7 @@ import React , {useEffect, useState} from 'react';
 import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import TextEditor from '../Components/TextEditor';
-import {getUserNotes, createNote, deleteNote, getUserFolders, updateFolder, createFolder, deleteFolder} from '../api/userAPI';
+import {getUserNotes, createNote, deleteNote, getUserFolders, updateFolder, createFolder, deleteFolder, updateUserFolders} from '../api/userAPI';
 import { Note } from '../types/Note'
 import { updateNote } from '../api/userAPI';
 import {AiOutlineCheck, AiOutlineFileText } from 'react-icons/ai';
@@ -41,7 +41,9 @@ function App() {
     if(user){
       console.log("successfully logged in as : " + user.email);
       refreshNoteList(true);
-      getUserFolders(user?.email).then(result => setFolders(result.data));
+      getUserFolders(user?.email).then(result => setFolders(result.data
+        .sort((a : Folder, b : Folder) => a.order - b.order )
+      ));
     }
   },[user]);
 
@@ -192,8 +194,9 @@ function App() {
       console.log("New folder!");
       createFolder(user.email, folderName).then((response: any) => 
       { 
-        const newFolderObject : Folder = {_id: response.data.insertedId, name: response.data.folderName};
-        setFolders(folders => [...folders, newFolderObject]);
+        const newFolderObject : Folder = {_id: response.data.insertedId, name: response.data.folderName, order: response.data.index};
+        setFolders(folders => [...folders, newFolderObject]
+          .sort((a : Folder, b : Folder) => a.order - b.order ));
       });
 
     }
@@ -232,8 +235,37 @@ function App() {
       event.dataTransfer.setData("application/json", JSON.stringify(note));
     }
 
-    const elements = folders.map(folder => {
+    const elements = folders.map((folder, index) => {
     
+      const handleDropOnFolder = (e : any, targetIndex : any) => {
+        e.preventDefault();
+
+        if(e.dataTransfer.types.includes("application/json")){
+          const data = JSON.parse(e.dataTransfer.getData("application/json"));
+          if(data.folder !== folder?._id){
+            moveNoteToFolder(folder?._id, data);
+            console.log("note from other folder!");
+          }
+          else console.log("note from current folder!");
+            return;
+        }
+        const sourceIndex = e.dataTransfer.getData('index');
+        if(targetIndex != parseInt(sourceIndex)){
+        console.log(folder?.order);
+        console.log(sourceIndex);
+        const updatedFolders = [...folders];
+    
+        // Reorder the items in the array
+        const [draggedItem] = updatedFolders.splice(sourceIndex, 1);
+        updatedFolders.splice(targetIndex, 0, draggedItem);
+        updatedFolders.forEach((folder, index) => folder.order = index);
+        //console.log(updatedFolders);
+        
+        updateUserFolders(user?.email, updatedFolders);
+        setFolders(updatedFolders);
+        //setItems(updatedItems);
+        }
+      };
       const notesToRender = notes.filter(note => note.folder === folder._id);  
       const noteElements = notesToRender.map(note => (
         <motion.div
@@ -262,6 +294,8 @@ function App() {
       updateFolderName={updateFolderName}
       moveNoteToFolder={moveNoteToFolder}
       toggleDeleteFolderModal={toggleDeleteFolderModal}
+      setFolders={setFolders}
+      handleDropOnFolder={handleDropOnFolder}
       />
       )
     })

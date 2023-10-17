@@ -37,14 +37,16 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
       setFolderNameInput("");
     }
   }
-  function handleFolderDrop(event){
+  function handleNoteDrop(event){
     event.preventDefault();
-    const data = JSON.parse(event.dataTransfer.getData("application/json"));
-    if(data.folder !== ""){
+    if(event.dataTransfer.types.includes("application/json")){
+    const data = JSON.parse(event?.dataTransfer?.getData("application/json"));
+    if(data?.folder !== ""){
       moveNoteOutOfFolder(data);
       console.log("note from a folder!");
     }
     else console.log("note from no folder!");
+    }
   }
 
   function updateCreationType(choice){
@@ -68,7 +70,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
           {renderTopLevelNotes(notes)}
           </div>
           <div 
-            onDrop={handleFolderDrop} onDragOver={(e)=>{e.preventDefault()}}
+            onDrop={handleNoteDrop} onDragOver={(e)=>{e.preventDefault()}}
             onMouseEnter={() => setIsHoveringAdd(true)}
             onMouseLeave={() => {setIsHoveringAdd(false); setIsCreating(false); setCreationType(undefined);}}
             onClick={() => {setIsCreating(true)}}
