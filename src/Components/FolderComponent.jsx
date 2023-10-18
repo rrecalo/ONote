@@ -16,6 +16,10 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
   const [inputError, setInputError] = useState("");
   const [dragging, setDragging] = useState(false);
 
+  // useEffect(()=>{
+  //   console.log(notes);
+  // },[notes])
+
   useEffect(()=>{
     const changeFolderNameInterval = setTimeout(()=>{
       if(lastNameChange){
@@ -102,18 +106,7 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
       discardNameChanges();
     }
   }
-
-  function handleDrop(event){
-    event.preventDefault();
-    console.log(event.dataTransfer);
-    const data = JSON.parse(event.dataTransfer.getData("application/json"));
-    if(data.folder !== folder?._id){
-      moveNoteToFolder(folder?._id, data);
-      console.log("note from other folder!");
-    }
-    else console.log("note from current folder!");
-  }
-
+  
   function handleDeleteClicked(event){
     event.stopPropagation();
     toggleDeleteFolderModal(folder);

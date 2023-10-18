@@ -31,7 +31,7 @@ export async function createFolder(email: string | undefined, folderName : strin
 
 export async function updateNote(note : Note){
     let endpoint = "/updateNote";
-    return axios.put(BASE_URL + endpoint, {title : note.title, _id: note._id, folder: note.folder, text: note.text}).then((response) => {return(response)});
+    return axios.put(BASE_URL + endpoint, {title : note.title, _id: note._id, folder: note.folder, text: note.text, index: note.index}).then((response) => {return(response)});
 }
 
 export async function updateFolder(email : string | undefined, folder : Folder){

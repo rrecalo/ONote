@@ -33,7 +33,7 @@ export default function TextEditor({noteId, getNoteById, updateNoteContent, ...p
     <div className='h-full overflow-hidden'>
       <Editor
         id="editor"
-        onInit={(evt, editor) => {editorRef.current = editor; console.log(editor)}}
+        onInit={(evt, editor) => {editorRef.current = editor; /**console.log(editor)*/}}
         onEditorChange={handleEditorChange}
         initialValue={() => getWorkingNoteContent()}
         //ref={editorRef}
