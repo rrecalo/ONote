@@ -3,4 +3,5 @@ export type Note = {
     folder : string,
     title: string,
     text: string,
+    index: number,
   }

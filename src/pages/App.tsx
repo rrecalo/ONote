@@ -228,15 +228,29 @@ function App() {
   }
 
 
+  function handleReorderFolder(event: any, thisNote : Note){
+    if(event.dataTransfer.types.includes("application/json")){
+      const data = JSON.parse(event.dataTransfer.getData("application/json"));
+      let droppedNote = data as Note;
+      if(droppedNote.folder === thisNote.folder && droppedNote._id !== thisNote?._id){
+        event.stopPropagation();
+        swapNoteIndices(thisNote, data as Note);
+      }
+      else return;
+    }
+  }
+
+  function handleDragStart(event : any, note : any){
+    event.dataTransfer.setData("application/json", JSON.stringify(note));
+  }
+
   //for rendering the existing notes in the sidebar!
   function renderNoteList(folders : Array<Folder>){
 
-    function handleDragStart(event : any, note : any){
-      event.dataTransfer.setData("application/json", JSON.stringify(note));
-    }
+    
 
     const elements = folders.map((folder, index) => {
-    
+      
       const handleDropOnFolder = (e : any, targetIndex : any) => {
         e.preventDefault();
 
@@ -244,13 +258,13 @@ function App() {
           const data = JSON.parse(e.dataTransfer.getData("application/json"));
           if(data.folder !== folder?._id){
             moveNoteToFolder(folder?._id, data);
-            console.log("note from other folder!");
+           // console.log("note from other folder!");
           }
           else console.log("note from current folder!");
             return;
         }
         const sourceIndex = e.dataTransfer.getData('index');
-        if(targetIndex != parseInt(sourceIndex)){
+        if(targetIndex !== parseInt(sourceIndex)){
         console.log(folder?.order);
         console.log(sourceIndex);
         const updatedFolders = [...folders];
@@ -267,6 +281,7 @@ function App() {
         }
       };
       const notesToRender = notes.filter(note => note.folder === folder._id);  
+      notesToRender.sort((a : Note, b : Note) => a.index - b.index);
       const noteElements = notesToRender.map(note => (
         <motion.div
         initial={{opacity:0, y:-5, backgroundColor: "#fafaf9"}}
@@ -276,6 +291,7 @@ function App() {
         draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
         t gap-1 pe-2 + ${workingNote?._id === note._id ? 'font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
         onClick={(e)=>{e.stopPropagation(); openNote(note?._id)}}
+        onDrop={(e) =>handleReorderFolder(e, note)}
         key={note?._id}>
           
           <AiOutlineFileText className={`w-4 h-4
@@ -304,12 +320,8 @@ function App() {
 
   function renderTopLevelNotes(){
 
-    function handleDragStart(event : any, note : any){
-      event.dataTransfer.setData("application/json", JSON.stringify(note));
-    }
-
     return (
-      notes.map(note => {
+      notes.sort((a: Note, b: Note) => a.index - b.index).map(note => {
       if(note.folder === "")
       return <motion.div
       initial={{opacity:0, x:-5}}
@@ -319,7 +331,9 @@ function App() {
       draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
       t gap-1 pe-2
       " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
-      onClick={()=>openNote(note?._id)}
+      onClick={(e)=>{e.stopPropagation(); openNote(note?._id)}}
+      onDragOver={(e)=>{e.preventDefault()}}
+      onDrop={(e) =>{handleReorderFolder(e, note)}}
       key={note?._id}>
         
         <AiOutlineFileText className={`w-4 h-4
@@ -383,24 +397,81 @@ function App() {
     setPreferences(old => newPref);
   }
   
+  function swapNoteIndices(targetedNote : Note, droppedNote : Note){
+    //console.log(droppedNote);
+    let index = targetedNote.index;
+    targetedNote.index=droppedNote.index;
+    droppedNote.index = index;
+    let notesCopy = [...notes];
+    //let notesCopy = [...notes.filter(note=>note?._id !== targetedNote?._id && note?._id !== droppedNote._id),
+    //targetedNote, droppedNote];
+    // Reorder the items in the array
+    let folder = notesCopy.filter(note=>note?.folder === targetedNote.folder);
+    console.log(folder);
+    let target = folder.find(note=>note?._id===targetedNote?._id);
+    let dropped = folder.find(note=>note?._id===droppedNote?._id);
+    const [dragged] = folder.splice(folder.indexOf(dropped as Note), 1);
+    folder.splice(folder.indexOf(target as Note), 0, dragged);
+    folder.forEach((item, index) => item.index = index);
+    console.log(folder);
+
+    setNotes([...notesCopy.filter(note=>note?.folder !== targetedNote.folder), ...folder]);
+    
+    folder.forEach(note=>
+      updateNote(note));
+
+  }
+
   function moveNoteToFolder(folderID : string, note : Note){
-    const updatedNotes = [...notes];
-    const noteToChange = updatedNotes.find((aNote : Note) => aNote._id === note._id);
+    let notesCopy = [...notes];
+    const noteToChange = notesCopy.find((aNote : Note) => aNote._id === note._id);
     if(noteToChange){
       noteToChange.folder = folderID;
-      setNotes(updatedNotes);
-      updateNote(noteToChange);
+      let updatedNotes = assignNewNoteIndices(notesCopy);
+      let updatedNote = updatedNotes.find(note=>note?._id===noteToChange._id);
+
+      if(updatedNote){
+        updatedNote.index = countNotesInFolder(folderID);
+        setNotes(updatedNotes);
+        updatedNotes.forEach(note=>{
+          updateNote(note);
+        })
+      }
     }
-    
+  }
+
+  function countNotesInFolder(folderID : string){
+    return notes.filter(note=>note.folder === folderID).length;
+  }
+
+  function assignNewNoteIndices(notes: Array<Note>){
+    let notesCopy : Note[] = [];
+    folders.forEach(folder=>{
+      let notesInFolder = notes.filter(note => note.folder === folder._id);
+      notesInFolder.forEach((note, index) =>{
+        note.index = index;
+      })
+      notesCopy.push(...notesInFolder);
+    });
+    notesCopy.push(...notes.filter(note=>note.folder===""));
+    return notesCopy;
   }
 
   function moveNoteOutOfFolder(note : Note){
-    const updatedNotes = [...notes];
-    const noteToChange = updatedNotes.find((aNote : Note) => aNote._id === note._id);
+    const notesCopy = [...notes];
+    const noteToChange = notesCopy.find((aNote : Note) => aNote._id === note._id);
     if(noteToChange){
       noteToChange.folder = "";
-      setNotes(updatedNotes);
-      updateNote(noteToChange);
+      let updatedNotes = assignNewNoteIndices(notesCopy);
+      let updatedNote = updatedNotes.find(note=>note?._id===noteToChange._id);
+
+      if(updatedNote){
+        updatedNote.index = countNotesInFolder("");
+        setNotes(updatedNotes);
+        updatedNotes.forEach(note=>{
+          updateNote(note);
+        })
+      }
     }
     
   }
