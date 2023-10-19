@@ -52,6 +52,7 @@ export default function TextEditor({noteId, getNoteById, updateNoteContent, ...p
           'removeformat | help',
           //content_style: 'body { font-family: Lato; font-size:14px; font-weight:200; }',
           content_css: "/mycontent.css",
+          statusbar: false,
           //background-color: #a8a29e;
           placeholder: "Type some text here...",
         }}
