@@ -61,8 +61,9 @@ const PreferenceSelector = ({preferences, handlePreferenceChange}) => {
   return (
     <motion.div ref={modalRef} className='absolute top-5 right-10 w-8 h-8' layout="position">
         <motion.div className='rounded-md' 
-        animate={{backgroundColor: "transparent"}}
-        whileHover={{backgroundColor: "#d6d3d1"}}>
+        animate={{backgroundColor: "rgb(255, 255, 255)"}}
+        whileHover={{backgroundColor: "rgb(214, 211, 209)"}}
+        transition={{duration:0.15}}>
         <HiEllipsisHorizontal className='flex justify-center items-center w-full h-full text-stone-600' onClick={handleMenuToggle} />
         </motion.div>
         {
