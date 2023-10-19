@@ -41,9 +41,6 @@ function App() {
     if(user){
       console.log("successfully logged in as : " + user.email);
       refreshNoteList(true);
-      getUserFolders(user?.email).then(result => setFolders(result.data
-        .sort((a : Folder, b : Folder) => a.order - b.order )
-      ));
     }
   },[user]);
 
@@ -125,10 +122,19 @@ function App() {
   //that is returned from the database
   function refreshNoteList(loadFirstNote: boolean){
     getUserNotes(user?.email).then((response: any)=>{
+      getUserFolders(user?.email).then(result =>{
+      let fetchedFolders = result.data.sort((a : Folder, b : Folder) => a.order - b.order);
+      let fetchedNotes = response.data;
+      fetchedNotes = fetchedNotes?.sort((a : Note, b : Note) => a?.index - b.index);
+      
       if(loadFirstNote){
-        setWorkingNote(response.data[0]);
+        let firstFolderNotes = fetchedNotes.filter((note : Note) => note?.folder === fetchedFolders[0]._id);
+        setWorkingNote(firstFolderNotes[0]);
       }
-      setNotes(response.data);
+      setNotes(fetchedNotes);
+      setFolders(fetchedFolders);
+
+    });
     });
   }
 
