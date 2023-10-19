@@ -4,6 +4,9 @@
     font-family: 'Lato';
 }
 
+body{
+  overflow-x: hidden;
+}
 
 /* Target the scrollbar track */
 ::-webkit-scrollbar {

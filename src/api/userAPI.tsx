@@ -36,13 +36,11 @@ export async function updateNote(note : Note){
 
 export async function saveFolderName(email : string | undefined, folder : Folder){
     let endpoint = "/updateFolderName";
-    console.log(folder);
     return axios.put(BASE_URL + endpoint, {email : email, _id : folder._id, name : folder.name}).then((response) => {return(response)});
 }
 
 export async function saveFolderState(email : string | undefined, folder : Folder){
     let endpoint = "/updateFolderState";
-    console.log(folder);
     return axios.put(BASE_URL + endpoint, {email : email, _id : folder._id, opened : folder.opened}).then((response) => {return(response)});
 }
 
