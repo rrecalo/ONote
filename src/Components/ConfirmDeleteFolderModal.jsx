@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import { AiFillDelete } from 'react-icons/ai'
-
+import {motion} from 'framer-motion'
 const ConfirmDeleteFolderModal = ({showModal, closeModal, deleteFolder, folder}) => {
 
     const [confirmDelete, setConfirmDelete] = useState(false);
@@ -58,9 +58,14 @@ const ConfirmDeleteFolderModal = ({showModal, closeModal, deleteFolder, folder})
 
   return (
     showModal ?
-    <div id="confirm-delete-modal"  className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-10 ">
-      <div className="modal-overlay bg-stone-500 opacity-50 w-full h-full absolute" onClick={closeModal}></div>
-      <div className="modal-container w-11/12 md:max-w-sm mx-auto rounded-lg shadow-lg z-50 overflow-y-auto">
+    <div id="confirm-delete-modal"  className="absolute top-0 left-0 w-full h-full flex items-center justify-center z-20">
+      <motion.div className="modal-overlay bg-stone-500 opacity-50 w-full h-full absolute" onClick={closeModal} 
+      initial={{opacity:0}}
+      animate={{opacity:0.5}}/>
+      <motion.div className="modal-container w-11/12 md:max-w-sm mx-auto rounded-lg shadow-lg z-50 overflow-y-auto"
+      initial={{opacity:0, scale:0.5}}
+      animate={{opacity:1, scale:1}}
+      transition={{duration:0.25}}>
         <div className="modal-content py-2 text-left px-3 bg-stone-100 h-44 opacity-100">
           <div className='flex flex-col h-full justify-around text-center'>
             <div>
@@ -93,7 +98,7 @@ const ConfirmDeleteFolderModal = ({showModal, closeModal, deleteFolder, folder})
           
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
     :
     <></>

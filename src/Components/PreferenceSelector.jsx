@@ -60,12 +60,15 @@ const PreferenceSelector = ({preferences, handlePreferenceChange}) => {
 
   return (
     <motion.div ref={modalRef} className='absolute top-5 right-10 w-8 h-8' layout="position">
+        <motion.div className='rounded-md' 
+        animate={{backgroundColor: "transparent"}}
+        whileHover={{backgroundColor: "#d6d3d1"}}>
         <HiEllipsisHorizontal className='flex justify-center items-center w-full h-full text-stone-600' onClick={handleMenuToggle} />
-        
+        </motion.div>
         {
             open ?
             
-        <motion.div  className="absolute right-0 z-50 mt-0 h-auto w-40 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none
+        <motion.div  className="absolute right-0 z-50 mt-0 h-auto w-40 origin-top-right rounded-md bg-stone-50 shadow-lg ring-2 ring-black ring-opacity-5 focus:outline-none
         flex flex-col justify-start items-center p-2"
         layout="position"
         initial={{scaleY: 0.75, scaleX:0.75, y:0, opacity:0}}
@@ -73,7 +76,7 @@ const PreferenceSelector = ({preferences, handlePreferenceChange}) => {
         transition={{duration:0.25}}>
             <div className='flex gap-2 p-1'>
             <label className='text-stone-600 font-light'>Full Width</label>
-            <motion.span class="border rounded-full border-grey flex items-center cursor-pointer w-11 justify-start "
+            <motion.span class="border rounded-full border-grey flex items-center cursor-pointer w-11 h-6 justify-start "
             onClick={handleEditorWidthChange}
             initial={{background: fullWidth ? "#a8a29e" : ""}}
             animate={{background: fullWidth ? "#a8a29e" : ""}}
