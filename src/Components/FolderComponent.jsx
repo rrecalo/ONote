@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { AiOutlineFolder, AiFillDelete, AiOutlineFolderOpen, AiOutlineCheck } from 'react-icons/ai'
 import { HiOutlinePencil } from 'react-icons/hi'
-import {motion} from 'framer-motion'
+import {AnimatePresence, motion} from 'framer-motion'
 
 const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, toggleDeleteFolderModal, handleDropOnFolder, updateFolderState, ...props}) => {
 
@@ -134,10 +134,12 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
 
   return (
     <motion.div
+
     layout="position"
     key={folder?._id}
     initial={{opacity:0, x:25}}
     animate={{opacity:1, x:0}}
+    transition={{duration:0.25}}
     className={`text-stone-600 w-full cursor-pointer
     t gap-1 mt-1 text-base select-none`} 
     // onDrop={handleDrop} 
@@ -149,6 +151,7 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
     onDrop={(e) => handleDropOnFolder(e, folder?.order)}
     >
       <motion.div className='flex justify-start items-center w-full gap-2 cursor-default pl-3 pe-2'
+      initial={{backgroundColor: "#fafaf9"}}
       animate={{backgroundColor: "#fafaf9"}}
       whileHover={{backgroundColor: "#e7e5e4", x:1}}
       transition={{type:"tween", duration:0.1, ease:"linear"}}>
@@ -162,6 +165,7 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
        */}
       <div className='flex justify-start items-center w-full' 
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+        
         <div className='w-full'>
           {
           editingName ? 
@@ -174,7 +178,7 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
           } 
 
         </div>
-        <div className='flex justify-center items-center w-2/12'>
+        <div className='flex justify-center items-center w-8'>
         {
         isHover ?
         <div className='flex w-full h-full justify-start gap-1 items-start'>
@@ -196,10 +200,13 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
       <motion.p className='pl-8 text-red-600 text-[0.75rem] w-full' initial={{x:-5, opacity:0.5}} animate={{x:0, opacity:1}}
       >{inputError}</motion.p>
       : <></> }
-      <motion.div className='pl-3'>
-      {expanded ? notes :
-       <></>}
-      </motion.div>
+      <hr className='ml-3 border-0 py-[0.5px] bg-stone-200'/>
+      <div className='pl-3'>
+        <AnimatePresence >
+        {expanded ? notes :
+        <></>}
+        </AnimatePresence>
+      </div>
     </motion.div>
   )
 }

@@ -67,6 +67,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
               </div>
             </div>
           {renderNoteList(folders)}
+          <hr className='border-0 my-1'/>
           {renderTopLevelNotes(notes)}
           </div>
           <div 

@@ -17,9 +17,11 @@ const PreferenceSelector = ({preferences, handlePreferenceChange}) => {
     function handleEditorWidthChange(){
         if(fullWidth){
             setFullWidth(false);
+            setCentered(true);
         }
         else{
             setFullWidth(true);
+            setCentered(false);
         }
     }
 

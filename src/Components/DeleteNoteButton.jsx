@@ -5,7 +5,7 @@ const DeleteNoteButton = ({handleDeleteNote, disableDelete}) => {
 
 
   return (
-    <button className={`text-lg hover:text-white px-2 py-2 rounded-md outline-none ${disableDelete ? 'hover:bg-stone-300' : 'hover:bg-red-500'}`} onClick={handleDeleteNote} disabled={disableDelete}>
+    <button className={`text-xs rounded-md outline-none ${disableDelete ? '' : ''}`} onClick={handleDeleteNote} disabled={disableDelete}>
         <AiFillDelete />
     </button>
   )
