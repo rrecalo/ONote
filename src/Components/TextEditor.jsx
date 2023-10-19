@@ -1,63 +1,46 @@
-import React, { useRef, useEffect} from 'react';
-import { Editor } from '@tinymce/tinymce-react';
-import './TextEditor.css';
-//import './mycontent.css';
+import React, { useState, useEffect } from 'react';
+import ReactQuill from 'react-quill';
+import EditorToolbar, {modules, formats} from './EditorToolbar.jsx'
+import 'react-quill/dist/quill.snow.css';
+import {motion} from 'framer-motion'
+import './TextEditor.css'
 
-export default function TextEditor({noteId, getNoteById, updateNoteContent, ...props}) {
+function TextEditor({noteId, getNoteById, updateNoteContent, ...props}) {
 
-  const editorRef = useRef(null);
-  
-  const log = () => {
-    if (editorRef.current) {
-    }
+  const [value, setValue] = useState(null);
+  const handleChange = newValue => {
+    setValue(newValue);
   };
 
-  //when the note id changes, set the content to be equal to respective note id's content
   useEffect(()=>{
-    if(noteId && editorRef){
-      editorRef?.current?.setContent(getWorkingNoteContent());
+    if(value !== null && value !== undefined){
+      console.log(value);
+      updateNoteContent(noteId, value);
     }
-  },[noteId, editorRef])
+  },[value])
 
-  function getWorkingNoteContent(){
-    return getNoteById(noteId)?.text;
-  }
-
-  //save the editor content into parent's workingNote state
-  function handleEditorChange(content, editor){
-    updateNoteContent(noteId, content);
-  }
+  useEffect(()=>{
+    if(noteId){
+      setValue(getNoteById(noteId)?.text);
+    }
+  }, [noteId, getNoteById])
 
   return (
-    <div className='h-full overflow-hidden'>
-      <Editor
-        id="editor"
-        onInit={(evt, editor) => {editorRef.current = editor; /**console.log(editor)*/}}
-        onEditorChange={handleEditorChange}
-        initialValue={getWorkingNoteContent}
-        //ref={editorRef}
-        //"<p>This is the initial content of the editor. Some <b>more</b> <i>text</i> could also go in here...</p>"
-        init={{
-          height: 500,
-          menubar: false,
-          //min_height:
-          plugins: [
-            'advlist lists image charmap print preview anchor',
-            'searchreplace visualblocks code fullscreen',
-            'insertdatetime media table paste code help wordcount'
-          ],
-          toolbar: 'undo redo | formatselect | ' +
-          'bold italic backcolor | alignleft aligncenter ' +
-          'alignright alignjustify | bullist numlist outdent indent | ' +
-          'removeformat | help',
-          //content_style: 'body { font-family: Lato; font-size:14px; font-weight:200; }',
-          content_css: "/mycontent.css",
-          statusbar: false,
-          //background-color: #a8a29e;
-          placeholder: "Type some text here...",
-        }}
+    <motion.div className="text-editor"
+    layout="position"
+    initial={{opacity:0, y:-10}}
+    animate={{opacity:1, y:0}}
+    transition={{duration:0.35}}>
+      <EditorToolbar />
+      <ReactQuill
+        theme="snow"
+        value={value}
+        onChange={handleChange}
+        placeholder={"Write something awesome..."}
+        modules={modules}
+        formats={formats}
       />
-      <button onClick={log}>Log editor content</button>
-    </div>
+    </motion.div>
   );
 }
+export default TextEditor;
