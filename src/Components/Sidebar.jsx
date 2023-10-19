@@ -1,6 +1,7 @@
 import React, {useEffect, useState, useRef} from 'react';
 import PreferenceSelector from './PreferenceSelector';
 import { AiOutlineFolder, AiOutlinePlus, AiOutlineFileText } from 'react-icons/ai';
+import {AnimatePresence, motion} from 'framer-motion'
 
 const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNoteCooldown, handlePref, pref, folders, initializeNewFolder, notes, moveNoteOutOfFolder, setFolders, ...props}) => {
 
@@ -12,6 +13,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
   const [isCreating, setIsCreating] = useState(false);
   const [noteNameInput, setNoteNameInput] = useState("");
   const [folderNameInput, setFolderNameInput] = useState("");
+  const [hasError, setHasError] = useState(false);
 
   useEffect(()=>{
     if(confirmAdd){
@@ -24,17 +26,28 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
 
   function handleNewNoteSubmit(event){
     if(event.key === "Enter"){
+      if(event.target.value.length >= 4){
       initializeNewNote(event.target.value);
-      //setNoteCreation(false);
       setNoteNameInput("");
+      setHasError(false);
+      }
+      else{
+        setHasError(true);
+      }
     }
   }
 
   function handleNewFolderSubmit(event){
     if(event.key === "Enter"){
-      initializeNewFolder(event.target.value);
+      if(event.target.value.length >= 4){
+        initializeNewFolder(event.target.value);
+        setFolderNameInput("");
+        setHasError(false);
+      }
+      else{
+        setHasError(true);
+      }
       //setFolderCreation(false);
-      setFolderNameInput("");
     }
   }
   function handleNoteDrop(event){
@@ -67,64 +80,109 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
           <hr className='border-0 my-1'/>
           {renderTopLevelNotes(notes)}
           </div>
-          <div 
+          <motion.div 
             onDrop={handleNoteDrop} onDragOver={(e)=>{e.preventDefault()}}
             onMouseEnter={() => setIsHoveringAdd(true)}
-            onMouseLeave={() => {setIsHoveringAdd(false); setIsCreating(false); setCreationType(undefined); setNoteNameInput(""); setFolderNameInput("");}}
-            onClick={() => {setIsCreating(true)}}
+            onMouseLeave={() => {setIsHoveringAdd(false); setIsCreating(false); setCreationType(undefined); setNoteNameInput(""); setFolderNameInput(""); setHasError(false);}}            onClick={() => {setIsCreating(true)}}
+            whileTap={{backgroundColor:"rgb(231, 229, 228)", transition:{duration:0.5}}}
             className={`mt-5 flex h-[20%] w-full justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
+              <AnimatePresence>
              {
               isHoveringAdd  && !newNoteCooldown  ? 
                 <div className='w-full h-full'>
                   {
                     creationType === 0 ?
-                    <div className='flex flex-row gap-1 justify-start items-center pl-3 text-base font-light text-stone-800'>
+                    <motion.div className='flex flex-col gap-1 justify-center items-start pl-3 text-base font-light text-stone-800'
+                    initial={{y:"200%"}}
+                    animate={{y:"0%"}}
+                    transition={{duration:0.25}}>
+                      <div className='flex flex-row justify-start items-center'>
                       <AiOutlineFileText className='w-4 h-4'/>
                       <input autoFocus id="new-name-input" className='outline-none bg-transparent w-full' placeholder='Note Name...' maxLength={18} value={noteNameInput}
-                      onChange={(e)=>setNoteNameInput(e.target.value)} onKeyDown={handleNewNoteSubmit}/>
-                    </div>
+                      onChange={(e)=>{setNoteNameInput(e.target.value); if(e.target.value.length >=4)setHasError(false);}} onKeyDown={handleNewNoteSubmit}
+                      />
+                      </div>
+                      {
+                      hasError ?
+                      <motion.div className='text-xs text-red-500 font-verylight pl-3'
+                      initial={{opacity:0.5, y:-3}}
+                      animate={{opacity:1, y:0}}>
+                        Name must be at least 4 characters!
+                      </motion.div> : <></>
+                      }
+                    </motion.div>
                     :
                     <></>
                   }
                   {
                     creationType === 1 ?
-                    <div className='flex flex-row gap-1 justify-start items-center pl-3 text-base font-light text-stone-800'>
+                    <motion.div className='flex flex-col gap-1 justify-center items-start pl-3 text-base font-light text-stone-800'
+                    initial={{y:"200%"}}
+                    animate={{y:"0%"}}
+                    transition={{duration:0.25}}>
+                    <div className='flex flex-row justify-start items-center'>
                     <AiOutlineFolder className='w-4 h-4'/>
                     <input autoFocus id="new-folder-input" className='outline-none bg-transparent w-full' placeholder='Folder Name...' maxLength={18} value={folderNameInput}
-                    onChange={(e)=>setFolderNameInput(e.target.value)} onKeyDown={handleNewFolderSubmit}/>
+                    onChange={(e)=>{setFolderNameInput(e.target.value); if(e.target.value.length >=4)setHasError(false);}} onKeyDown={handleNewFolderSubmit}/>
                     </div>
+                    {
+                      hasError ?
+                      <motion.div className='text-xs text-red-500 font-verylight pl-3'
+                      initial={{opacity:0.5, y:-3}}
+                      animate={{opacity:1, y:0}}>
+                        Name must be at least 4 characters!
+                      </motion.div> : <></>
+                      }
+
+                    </motion.div>
                     :
                     <></>
                   }
 
                   {(isCreating && creationType === undefined) ?
                     <div className='flex flex-col h-full justify-around items-start pl-3 text-base font-light text-stone-800' >
-                      <div className='flex items-center gap-1 w-full h-1/2' onClick={() => {updateCreationType(0)}}>
+                      <motion.div className='flex items-center gap-1 w-full h-1/2' onClick={() => {updateCreationType(0)}}
+                      initial={{opacity:0.5}}
+                      animate={{opacity:1, x:5}}
+                      transition={{duration:0.25}}>
                         <AiOutlineFileText className='w-4 h-4'/>
                         Note
-                      </div>
-                      <div className='flex items-center gap-1 w-full h-1/2' onClick={() => {updateCreationType(1)}}>
+                      </motion.div>
+                      <motion.div className='flex items-center gap-1 w-full h-1/2' onClick={() => {updateCreationType(1)}}
+                      initial={{opacity:0.5}}
+                      animate={{opacity:1, x:5}}
+                      transition={{duration:0.25}}>
                       <AiOutlineFolder className='w-4 h-4'/>
                         Folder
-                      </div>
+                      </motion.div>
                     </div>
                     :
                     <></>
                   }
                   {!isCreating ?
-                    <div className='flex justify-start items-center gap-1 pl-3 text-sm font-light text-stone-600' >
+                    <motion.div className='flex justify-start items-center gap-1 pl-3 text-sm font-light text-stone-600' 
+                    initial={{opacity:0}}
+                    animate={
+                      isHoveringAdd ?
+                      {x:5, opacity:1, transition:{duration:0.25}} 
+                      : 
+                      {opacity:0}
+
+                    }>
                       <AiOutlinePlus className='w-3 h-3 text-stone-600'/>
                       create new
-                    </div>
+                    </motion.div>
                     :
                     <></>
                   }
                   
                 </div>
+                
                 : 
                 <></>
             }
-          </div>
+           </AnimatePresence>
+          </motion.div>
         </div>
   )}
 
