@@ -34,9 +34,16 @@ export async function updateNote(note : Note){
     return axios.put(BASE_URL + endpoint, {title : note.title, _id: note._id, folder: note.folder, text: note.text, index: note.index}).then((response) => {return(response)});
 }
 
-export async function updateFolder(email : string | undefined, folder : Folder){
+export async function saveFolderName(email : string | undefined, folder : Folder){
     let endpoint = "/updateFolderName";
+    console.log(folder);
     return axios.put(BASE_URL + endpoint, {email : email, _id : folder._id, name : folder.name}).then((response) => {return(response)});
+}
+
+export async function saveFolderState(email : string | undefined, folder : Folder){
+    let endpoint = "/updateFolderState";
+    console.log(folder);
+    return axios.put(BASE_URL + endpoint, {email : email, _id : folder._id, opened : folder.opened}).then((response) => {return(response)});
 }
 
 export async function updateUserFolders(email : string | undefined, folders : Folder[]){

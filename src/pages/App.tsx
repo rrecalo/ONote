@@ -2,11 +2,10 @@ import React , {useEffect, useState} from 'react';
 import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import TextEditor from '../Components/TextEditor';
-import {getUserNotes, createNote, deleteNote, getUserFolders, updateFolder, createFolder, deleteFolder, updateUserFolders} from '../api/userAPI';
+import {getUserNotes, createNote, deleteNote, getUserFolders, saveFolderName, saveFolderState, createFolder, deleteFolder, updateUserFolders} from '../api/userAPI';
 import { Note } from '../types/Note'
 import { updateNote } from '../api/userAPI';
 import {AiOutlineCheck, AiOutlineFileText } from 'react-icons/ai';
-import { BsTextLeft } from 'react-icons/bs'
 import Sidebar from '../Components/Sidebar';
 import DeleteNoteButton from '../Components/DeleteNoteButton';
 import ConfirmDeleteModal from '../Components/ConfirmDeleteModal';
@@ -15,7 +14,7 @@ import { Folder } from '../types/Folder';
 import FolderComponent from '../Components/FolderComponent';
 import { useNavigate } from 'react-router-dom';
 import ConfirmDeleteFolderModal from '../Components/ConfirmDeleteFolderModal';
-import {motion, Reorder} from 'framer-motion';
+import { motion } from 'framer-motion';
 
 
 
@@ -171,7 +170,17 @@ function App() {
       folderToUpdate.name = newName;
       setFolders(updatedFolders);
       //store in DB
-      updateFolder(user?.email, folderToUpdate);
+      saveFolderName(user?.email, folderToUpdate);
+    }
+  }
+
+  function updateFolderState(folder : Folder, newState : boolean){
+    const updatedFolders = folders;
+    const folderToUpdate = updatedFolders.find((f :  Folder) => f._id === folder._id);
+    if(folderToUpdate){
+      folderToUpdate.opened = newState;
+      //store in DB
+      saveFolderState(user?.email, folderToUpdate);
     }
 
   }
@@ -200,7 +209,7 @@ function App() {
       console.log("New folder!");
       createFolder(user.email, folderName).then((response: any) => 
       { 
-        const newFolderObject : Folder = {_id: response.data.insertedId, name: response.data.folderName, order: response.data.index};
+        const newFolderObject : Folder = {_id: response.data.insertedId, name: response.data.folderName, order: response.data.index, opened: response.data.opened};
         setFolders(folders => [...folders, newFolderObject]
           .sort((a : Folder, b : Folder) => a.order - b.order ));
       });
@@ -318,6 +327,7 @@ function App() {
       toggleDeleteFolderModal={toggleDeleteFolderModal}
       setFolders={setFolders}
       handleDropOnFolder={handleDropOnFolder}
+      updateFolderState={updateFolderState}
       />
       )
     })

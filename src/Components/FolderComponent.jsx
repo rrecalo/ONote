@@ -4,7 +4,7 @@ import { AiOutlineFolder, AiFillDelete, AiOutlineFolderOpen, AiOutlineCheck } fr
 import { HiOutlinePencil } from 'react-icons/hi'
 import {motion} from 'framer-motion'
 
-const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, toggleDeleteFolderModal, handleDropOnFolder, ...props}) => {
+const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, toggleDeleteFolderModal, handleDropOnFolder, updateFolderState, ...props}) => {
 
   const [folderName, setFolderName] = useState(folder?.name);
   const [ originalName, setOriginalName] = useState(folder?.name);
@@ -12,13 +12,8 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
   const [lastNameChange, setLastNameChange] = useState();
   const [isHover, setHover] = useState();
   const myInputRef = useRef(null);
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(folder.opened);
   const [inputError, setInputError] = useState("");
-  const [dragging, setDragging] = useState(false);
-
-  // useEffect(()=>{
-  //   console.log(notes);
-  // },[notes])
 
   useEffect(()=>{
     const changeFolderNameInterval = setTimeout(()=>{
@@ -57,6 +52,12 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
     }, 3000);
     return () => clearInterval(editingTimeout);
   }, [editingName]);
+
+
+  useEffect(()=>{
+    if(expanded !== undefined && expanded !== null)
+      updateFolderState(folder, expanded);
+  }, [expanded])
 
   function changeFolderName(){
     if(folderName.length > 3 && folder){
@@ -113,7 +114,7 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
   }
 
   function toggleExpanded(){
-    if(!editingName && !dragging){
+    if(!editingName){
       if(expanded){
         setExpanded(false);
       }
