@@ -5,16 +5,17 @@ import TextEditor from '../Components/TextEditor';
 import {getUserNotes, createNote, deleteNote, getUserFolders, saveFolderName, saveFolderState, createFolder, deleteFolder, updateUserFolders} from '../api/userAPI';
 import { Note } from '../types/Note'
 import { updateNote } from '../api/userAPI';
-import {AiOutlineCheck, AiOutlineFileText } from 'react-icons/ai';
+import {AiFillDelete, AiOutlineCheck, AiOutlineFileText } from 'react-icons/ai';
 import Sidebar from '../Components/Sidebar';
 import DeleteNoteButton from '../Components/DeleteNoteButton';
 import ConfirmDeleteModal from '../Components/ConfirmDeleteModal';
-import {Preferences} from '../types/Preferences';
+import {EditorWidth, Preferences} from '../types/Preferences';
 import { Folder } from '../types/Folder';
 import FolderComponent from '../Components/FolderComponent';
 import { useNavigate } from 'react-router-dom';
 import ConfirmDeleteFolderModal from '../Components/ConfirmDeleteFolderModal';
 import { motion } from 'framer-motion';
+import NoteComponent from '../Components/NoteComponent';
 
 
 
@@ -298,23 +299,14 @@ function App() {
       const notesToRender = notes.filter(note => note.folder === folder._id);  
       notesToRender.sort((a : Note, b : Note) => a.index - b.index);
       const noteElements = notesToRender.map(note => (
-        <motion.div
-        initial={{opacity:0, y:-5, backgroundColor: "#fafaf9"}}
-        animate={{opacity:1, y:0, backgroundColor: "#fafaf9"}}
-        whileHover={{backgroundColor: "#e7e5e4", x:0.5}}
-        transition={{type:"tween", duration:0.1, ease:"linear"}}
-        draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
-        t gap-1 pe-2 + ${workingNote?._id === note._id ? 'font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
-        onClick={(e)=>{e.stopPropagation(); openNote(note?._id)}}
-        onDrop={(e) =>handleReorderFolder(e, note)}
-        key={note?._id}>
-          
-          <AiOutlineFileText className={`w-4 h-4
-          + ${workingNote?._id === note._id ? 'text-stone-950' : 'text-stone-600'}`} />
-          <div className='text-sm'>
-            {note?.title}
-          </div>
-        </motion.div>));
+        <NoteComponent 
+        handleDragStart={handleDragStart}
+        handleReorderFolder={handleReorderFolder}
+        workingNote={workingNote}
+        note={note}
+        openNote={openNote}
+        handleDeleteNote={toggleDeleteModal}
+        />));
 
 
       return (
@@ -340,10 +332,10 @@ function App() {
       notes.sort((a: Note, b: Note) => a.index - b.index).map(note => {
       if(note.folder === "")
       return <motion.div
-      initial={{opacity:0, x:-5}}
+      initial={{opacity:0, x:-5, backgroundColor: "#fafaf9"}}
       animate={{opacity:1, x:0, backgroundColor: "#fafaf9"}}
       whileHover={{backgroundColor: "#e7e5e4", x:1}}
-      transition={{type:"tween", duration:0.1, ease:"linear"}}
+      transition={{type:"tween", duration:0.35, ease:"linear"}}
       draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
       t gap-1 pe-2
       " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
@@ -508,10 +500,13 @@ function App() {
           <Sidebar setFolders={setFolders} moveNoteOutOfFolder={moveNoteOutOfFolder}  notes={notes}  renderTopLevelNotes={renderTopLevelNotes} folders={folders} initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}
           initializeNewFolder={initializeNewFolder}/>
         </div>
-        <div className={`flex-grow p-2 flex flex-col h-full ${preferences?.editorWidth  + " " + preferences?.editorPosition}`}>
-          <div className='flex w-full justify-between items-center gap-3 pe-5 bg-stone-50'>
+        {/* ${preferences?.editorWidth  + " " + preferences?.editorPosition} */}
+        <motion.div className={`flex-grow p-2 flex flex-col h-full ${preferences?.editorWidth  + " " + preferences?.editorPosition}`}>
+          <motion.div className='flex w-full justify-between items-center gap-3 mt-5 pe-5 bg-transparent'
+          layout="position" initial={{width:"full"}} animate={{width:"full"}} transition={{duration:0.35}}>
           <div className='w-3/4 max-w-[600px]'>
-            <input spellCheck={false} className='text-3xl pt-1 outline-none w-full max-w-[600px] text-stone-950 bg-stone-50' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}
+            <input
+            spellCheck={false} className='text-3xl pt-1 outline-none w-full max-w-[600px] text-stone-950' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}
             onKeyDown={handleTitleInputKeyPress}/>
             <motion.div 
              className={`text-[0.75rem] h-4 ${noteNameInputError === 1 ? 'text-red-600' : 'text-stone-400'}`}>
@@ -542,11 +537,10 @@ function App() {
           }
       
           <DeleteNoteButton handleDeleteNote={toggleDeleteModal} disableDelete={disableDelete}/>
-          </div>
-            
-            <TextEditor noteId={workingNote?._id} getNoteById={getNoteById} updateNoteContent={updateNoteContent}/>
+          </motion.div>
+            <TextEditor noteId={workingNote?._id} getNoteById={getNoteById} updateNoteContent={updateNoteContent} />
           
-          </div>
+          </motion.div>
 
       </div>
     </div>

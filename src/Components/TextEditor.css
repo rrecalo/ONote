@@ -1,41 +1,15 @@
-div .tox-toolbar__group{
-    border:none !important;
+#toolbar.ql-toolbar.ql-snow{
+    border:none;
+}
+.ql-container.ql-snow{
+    font-size:16px;
+    border:none;
+}
+.ql-toolbar.ql-snow .ql-formats{
+    margin:0 0 0 0;
 }
 
-.tox-toolbar__primary{
-    border: none !important;
-}
-
-.tox-toolbar-overlord{
-    border: none !important;
-    
-}
-
-.tox-editor-container{
-    border: none !important;
-}
-
-.tox-tinymce{
-    border-color: transparent !important;
-    height: 100% !important;
-
-    /* //overflow: auto !important; */
-}
-
-.tox-anchorbar{
-    display: none !important;
-}
-
-*{
-}
-
-
-/* 
-.tox-anchorbar{
-    color:#f5f5f4 !important;
-    stroke: #f5f5f4 !important;
-}
-*/
-.tox-statusbar__branding{
-    display: none;
+.ql-editor{
+    caret-color :#a1a1aa;
+    font-family: 'Lato';
 }
