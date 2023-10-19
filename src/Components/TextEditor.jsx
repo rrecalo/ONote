@@ -14,11 +14,10 @@ export default function TextEditor({noteId, getNoteById, updateNoteContent, ...p
 
   //when the note id changes, set the content to be equal to respective note id's content
   useEffect(()=>{
-
     if(noteId && editorRef){
       editorRef?.current?.setContent(getWorkingNoteContent());
     }
-  },[noteId])
+  },[noteId, editorRef])
 
   function getWorkingNoteContent(){
     return getNoteById(noteId)?.text;
@@ -35,7 +34,7 @@ export default function TextEditor({noteId, getNoteById, updateNoteContent, ...p
         id="editor"
         onInit={(evt, editor) => {editorRef.current = editor; /**console.log(editor)*/}}
         onEditorChange={handleEditorChange}
-        initialValue={() => getWorkingNoteContent()}
+        initialValue={getWorkingNoteContent}
         //ref={editorRef}
         //"<p>This is the initial content of the editor. Some <b>more</b> <i>text</i> could also go in here...</p>"
         init={{
