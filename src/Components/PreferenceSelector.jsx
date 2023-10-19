@@ -1,10 +1,14 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useRef } from 'react'
 import {EditorWidth, EditorPosition } from '../types/Preferences'
+import {AnimatePresence, motion} from 'framer-motion'
+import {HiEllipsisHorizontal} from 'react-icons/hi2'
 
 const PreferenceSelector = ({preferences, handlePreferenceChange}) => {
 
     const [fullWidth, setFullWidth] = useState(true);
     const [centered, setCentered] = useState(false);
+    const [open, setOpen] = useState(false);
+    const modalRef = useRef(null);
 
     useEffect(()=>{
         handlePreferenceChange({
@@ -13,6 +17,17 @@ const PreferenceSelector = ({preferences, handlePreferenceChange}) => {
         })
     }, [fullWidth, centered]);
 
+
+    useEffect(()=>{
+        if(open){
+            document.addEventListener('click', handleOutsideClick);
+        }
+    }, [open])
+
+    function handleOutsideClick(e){        
+        if(modalRef.current && !modalRef.current.contains(e.target))
+            setOpen(false);
+    }
 
     function handleEditorWidthChange(){
         if(fullWidth){
@@ -25,32 +40,57 @@ const PreferenceSelector = ({preferences, handlePreferenceChange}) => {
         }
     }
 
-    function handleEditorPositionChange(){
-        if(centered){
-            setCentered(false);
+    // function handleEditorPositionChange(){
+    //     if(centered){
+    //         setCentered(false);
+    //     }
+    //     else{
+    //         setCentered(true);
+    //     }
+    // }
+    
+    function handleMenuToggle(){
+        if(open){
+            setOpen(false);
         }
         else{
-            setCentered(true);
+            setOpen(true);
         }
     }
 
   return (
-    <div className='flex flex-col justify-center items-start'>
-        <div className='flex justify-start items-center gap-1 text-stone-700 font-light'>
-            <input type="checkbox" name="editorWidth" checked={fullWidth}
-            onChange={handleEditorWidthChange} className='accent-stone-700 w-4 h-4 outline-none focus:outline-none bg-stone-400 border-none'/>
-            <label>Full Editor Width</label>
-        </div>
-        { !fullWidth ? 
-        <div className='flex justify-start items-center gap-1 text-stone-700 font-light'>
-            <input type="checkbox" name="editorPosition" checked={centered}
-            onChange={handleEditorPositionChange} className='accent-stone-700 w-4 h-4 outline-none focus:outline-none bg-stone-400 border-none'/>
-            <label>Editor Centered</label>
-        </div>
-        : 
-        <></>
+    <motion.div ref={modalRef} className='absolute top-5 right-10 w-8 h-8' layout="position">
+        <HiEllipsisHorizontal className='flex justify-center items-center w-full h-full text-stone-600' onClick={handleMenuToggle} />
+        
+        {
+            open ?
+            
+        <motion.div  className="absolute right-0 z-50 mt-0 h-auto w-40 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none
+        flex flex-col justify-start items-center p-2"
+        layout="position"
+        initial={{scaleY: 0.75, scaleX:0.75, y:0, opacity:0}}
+        animate={{scaleY: 1, scaleX:1, y:0, opacity:1}}
+        transition={{duration:0.25}}>
+            <div className='flex gap-2 p-1'>
+            <label className='text-stone-600 font-light'>Full Width</label>
+            <motion.span class="border rounded-full border-grey flex items-center cursor-pointer w-11 justify-start "
+            onClick={handleEditorWidthChange}
+            initial={{background: fullWidth ? "#a8a29e" : ""}}
+            animate={{background: fullWidth ? "#a8a29e" : ""}}
+            transition={{delay:0.15, duration:0}}
+            layout="preserve-aspect"
+            >
+
+                <motion.span class="rounded-full border w-5 h-5 border-grey bg-white shadow" 
+                initial={{x: fullWidth ? "100%" : "0%"}}
+                animate={{x: fullWidth ? "100%" : "0%"}}
+                transition={{duration:0.15, ease:"linear"}}/>
+            </motion.span>
+            </div>
+        </motion.div>
+        : <></>
         }
-    </div>
+    </motion.div>
   )
 }
 

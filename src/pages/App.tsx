@@ -6,6 +6,7 @@ import {getUserNotes, createNote, deleteNote, getUserFolders, saveFolderName, sa
 import { Note } from '../types/Note'
 import { updateNote } from '../api/userAPI';
 import {AiFillDelete, AiOutlineCheck, AiOutlineFileText } from 'react-icons/ai';
+import {HiMiniEllipsisHorizontal} from 'react-icons/hi2';
 import Sidebar from '../Components/Sidebar';
 import DeleteNoteButton from '../Components/DeleteNoteButton';
 import ConfirmDeleteModal from '../Components/ConfirmDeleteModal';
@@ -16,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import ConfirmDeleteFolderModal from '../Components/ConfirmDeleteFolderModal';
 import { motion } from 'framer-motion';
 import NoteComponent from '../Components/NoteComponent';
+import PreferenceSelector from '../Components/PreferenceSelector';
 
 
 
@@ -406,13 +408,10 @@ function App() {
   }
   
   function swapNoteIndices(targetedNote : Note, droppedNote : Note){
-    //console.log(droppedNote);
     let index = targetedNote.index;
     targetedNote.index=droppedNote.index;
     droppedNote.index = index;
     let notesCopy = [...notes];
-    //let notesCopy = [...notes.filter(note=>note?._id !== targetedNote?._id && note?._id !== droppedNote._id),
-    //targetedNote, droppedNote];
     // Reorder the items in the array
     let folder = notesCopy.filter(note=>note?.folder === targetedNote.folder);
     console.log(folder);
@@ -492,6 +491,7 @@ function App() {
   
   return (
     <div className="App">
+      <PreferenceSelector handlePreferenceChange={handlePreferenceUpdate} preferences={preferences}/>
       <ConfirmDeleteModal showModal={showDeleteNoteModal} closeModal={toggleDeleteModal} deleteNote={handleDeleteNote} workingNoteTitle={workingNote?.title}/>
       <ConfirmDeleteFolderModal showModal={showDeleteFolderModal} closeModal={() => { setFolderToDelete(undefined); setShowDeleteFolderModal(false); } } 
       deleteFolder={handleDeleteFolder} folder={folderToDelete} />
@@ -536,10 +536,8 @@ function App() {
           <></>
           }
       
-          <DeleteNoteButton handleDeleteNote={toggleDeleteModal} disableDelete={disableDelete}/>
           </motion.div>
             <TextEditor noteId={workingNote?._id} getNoteById={getNoteById} updateNoteContent={updateNoteContent} />
-          
           </motion.div>
 
       </div>

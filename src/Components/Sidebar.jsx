@@ -57,9 +57,6 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
     <div id="sidebar" className='select-none w-full h-full 
     bg-stone-50 flex flex-col justify-start items-center pt-10'>
 
-          <div className='h-10'>
-          <PreferenceSelector handlePreferenceChange={handlePref} preferences={pref}/>
-          </div>
           <div id="your-notes-section" className='flex flex-col justify-center items-start gap-0 mt-5 max-w-full w-full'>
             <div className='flex flex-row items-center text-lg text-stone-800 text-left gap-1 pl-3'>
               <div className='font-bold text-xl text-stone-600'>
