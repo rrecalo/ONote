@@ -2,13 +2,13 @@ import React , {useEffect, useState} from 'react';
 import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import TextEditor from '../Components/TextEditor';
-import {getUserNotes, createNote, deleteNote, getUserFolders, saveFolderName, saveFolderState, createFolder, deleteFolder, updateUserFolders} from '../api/userAPI';
+import {getUserNotes, createNote, deleteNote, getUserFolders, saveFolderName, saveFolderState, createFolder, deleteFolder, updateUserFolders, getUserPrefs, updateUserPrefs} from '../api/userAPI';
 import { Note } from '../types/Note'
 import { updateNote } from '../api/userAPI';
 import {AiOutlineCheck, AiOutlineFileText } from 'react-icons/ai';
 import Sidebar from '../Components/Sidebar';
 import ConfirmDeleteModal from '../Components/ConfirmDeleteModal';
-import {Preferences} from '../types/Preferences';
+import {EditorPosition, EditorWidth, Preferences} from '../types/Preferences';
 import { Folder } from '../types/Folder';
 import FolderComponent from '../Components/FolderComponent';
 import { useNavigate } from 'react-router-dom';
@@ -40,6 +40,14 @@ function App() {
   useEffect(()=>{
     if(user){
       console.log("successfully logged in as : " + user.email);
+      getUserPrefs(user?.email).then(res =>{
+        if(res?.data?.editorWidth === "full"){
+          setPreferences({editorWidth: "full", editorPosition: "center"});
+        }
+        else if(res?.data?.editorWidth === "half"){
+          setPreferences({editorWidth: "half", editorPosition: "center"});
+        }
+      });
       refreshNoteList(true);
     }
   },[user]);
@@ -281,8 +289,8 @@ function App() {
         }
         const sourceIndex = e.dataTransfer.getData('index');
         if(targetIndex !== parseInt(sourceIndex)){
-        console.log(folder?.order);
-        console.log(sourceIndex);
+        //console.log(folder?.order);
+        //console.log(sourceIndex);
         const updatedFolders = [...folders];
     
         // Reorder the items in the array
@@ -391,7 +399,12 @@ function App() {
   }
 
   function handlePreferenceUpdate(newPref : Preferences){
-    setPreferences(old => newPref);
+    setPreferences(newPref);
+    let userPrefs = {
+      editorWidth : newPref.editorWidth,
+      editorPosition : newPref.editorPosition
+    }
+    updateUserPrefs(user?.email, userPrefs);
   }
   
   function swapNoteIndices(targetedNote : Note, droppedNote : Note){
@@ -401,13 +414,11 @@ function App() {
     let notesCopy = [...notes];
     // Reorder the items in the array
     let folder = notesCopy.filter(note=>note?.folder === targetedNote.folder);
-    console.log(folder);
     let target = folder.find(note=>note?._id===targetedNote?._id);
     let dropped = folder.find(note=>note?._id===droppedNote?._id);
     const [dragged] = folder.splice(folder.indexOf(dropped as Note), 1);
     folder.splice(folder.indexOf(target as Note), 0, dragged);
     folder.forEach((item, index) => item.index = index);
-    console.log(folder);
 
     setNotes([...notesCopy.filter(note=>note?.folder !== targetedNote.folder), ...folder]);
     
@@ -488,7 +499,9 @@ function App() {
           initializeNewFolder={initializeNewFolder}/>
         </div>
         {/* ${preferences?.editorWidth  + " " + preferences?.editorPosition} */}
-        <motion.div className={`flex-grow p-2 flex flex-col h-full ${preferences?.editorWidth  + " " + preferences?.editorPosition}`}>
+        <motion.div className={`flex-grow p-2 flex flex-col h-full ${
+          (preferences?.editorWidth === "full" ? EditorWidth.full : EditorWidth.half)  + " " + 
+          (preferences?.editorPosition === "center" ? EditorPosition.center : EditorPosition.start)}`}>
           <motion.div className='flex w-full justify-between items-center gap-3 mt-5 pe-5 bg-transparent'
           layout="position" initial={{width:"full"}} animate={{width:"full"}} transition={{duration:0.35}}>
           <div className='w-3/4 max-w-[600px]'>

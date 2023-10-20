@@ -5,17 +5,26 @@ import {HiEllipsisHorizontal} from 'react-icons/hi2'
 
 const PreferenceSelector = ({preferences, handlePreferenceChange}) => {
 
-    const [fullWidth, setFullWidth] = useState(true);
-    const [centered, setCentered] = useState(false);
+    const [fullWidth, setFullWidth] = useState();
+    const [centered, setCentered] = useState();
     const [open, setOpen] = useState(false);
     const modalRef = useRef(null);
 
     useEffect(()=>{
+        if(preferences?.editorWidth){
+            setFullWidth(preferences?.editorWidth === "full" ? true : false);
+            setCentered(preferences?.editorWidth === "full" ? true : false);
+        }
+    }, [preferences])
+
+    useEffect(()=>{
+        if(fullWidth !== undefined && fullWidth !== null){
         handlePreferenceChange({
-            editorWidth: fullWidth ? EditorWidth.full : EditorWidth.half,
-            editorPosition: centered ? EditorPosition.center : EditorPosition.start
-        })
-    }, [fullWidth, centered]);
+            editorWidth: fullWidth ? "full" : "half",
+            editorPosition: "center"
+        });
+        }
+    }, [fullWidth]);
 
 
     useEffect(()=>{
