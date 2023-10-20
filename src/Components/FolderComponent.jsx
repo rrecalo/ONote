@@ -195,13 +195,16 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
       </div>
       
       </motion.div>
+      <AnimatePresence mode='wait'>
       {inputError !== "" ?
-      <motion.p className='pl-8 text-red-600 text-[0.75rem] w-full' initial={{x:-5, opacity:0.5}} animate={{x:0, opacity:1}}
+      <motion.p key="input_error" className='pl-8 text-red-600 text-[0.75rem] w-full' initial={{x:-5, opacity:0.5}} animate={{x:0, opacity:1}}
+      exit={{y:-5, opacity:0}}
       >{inputError}</motion.p>
       : <></> }
+      </AnimatePresence>
       <hr className='ml-3 border-0 py-[0.5px] bg-stone-200'/>
       <div className='pl-3'>
-        <AnimatePresence >
+        <AnimatePresence>
         {expanded ? notes :
         <></>}
         </AnimatePresence>

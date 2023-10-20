@@ -8,6 +8,11 @@ import './TextEditor.css'
 function TextEditor({noteId, getNoteById, updateNoteContent, ...props}) {
 
   const [value, setValue] = useState(null);
+
+  useEffect(()=>{
+    
+  }, [])
+
   const handleChange = newValue => {
     setValue(newValue);
   };
