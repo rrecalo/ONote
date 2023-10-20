@@ -80,9 +80,12 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
                 Notes
               </div>
             </div>
+          <AnimatePresence mode='popLayout'>
           {renderNoteList(folders)}
           <hr className='border-0 my-1'/>
           {renderTopLevelNotes(notes)}
+          </AnimatePresence>
+
           </div>
           <motion.div 
             onDrop={handleNoteDrop} onDragOver={(e)=>{e.preventDefault()}}

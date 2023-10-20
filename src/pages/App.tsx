@@ -5,12 +5,10 @@ import TextEditor from '../Components/TextEditor';
 import {getUserNotes, createNote, deleteNote, getUserFolders, saveFolderName, saveFolderState, createFolder, deleteFolder, updateUserFolders} from '../api/userAPI';
 import { Note } from '../types/Note'
 import { updateNote } from '../api/userAPI';
-import {AiFillDelete, AiOutlineCheck, AiOutlineFileText } from 'react-icons/ai';
-import {HiMiniEllipsisHorizontal} from 'react-icons/hi2';
+import {AiOutlineCheck, AiOutlineFileText } from 'react-icons/ai';
 import Sidebar from '../Components/Sidebar';
-import DeleteNoteButton from '../Components/DeleteNoteButton';
 import ConfirmDeleteModal from '../Components/ConfirmDeleteModal';
-import {EditorWidth, Preferences} from '../types/Preferences';
+import {Preferences} from '../types/Preferences';
 import { Folder } from '../types/Folder';
 import FolderComponent from '../Components/FolderComponent';
 import { useNavigate } from 'react-router-dom';
@@ -333,25 +331,14 @@ function App() {
     return (
       notes.sort((a: Note, b: Note) => a.index - b.index).map(note => {
       if(note.folder === "")
-      return <motion.div
-      initial={{opacity:0, x:-5, backgroundColor: "#fafaf9"}}
-      animate={{opacity:1, x:0, backgroundColor: "#fafaf9"}}
-      whileHover={{backgroundColor: "#e7e5e4", x:1}}
-      transition={{type:"tween", duration:0.35, ease:"linear"}}
-      draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-start items-center pl-3 w-full cursor-pointer
-      t gap-1 pe-2
-      " + ${workingNote?._id === note._id ? 'bg-stone-100 font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
-      onClick={(e)=>{e.stopPropagation(); openNote(note?._id)}}
-      onDragOver={(e)=>{e.preventDefault()}}
-      onDrop={(e) =>{handleReorderFolder(e, note)}}
-      key={note?._id}>
-        
-        <AiOutlineFileText className={`w-4 h-4
-          + ${workingNote?._id === note._id ? 'text-stone-950' : 'text-stone-600'}`} />
-        <div>
-          {note?.title}
-        </div>
-      </motion.div>
+      return <NoteComponent 
+      handleDragStart={handleDragStart}
+      handleReorderFolder={handleReorderFolder}
+      workingNote={workingNote}
+      note={note}
+      openNote={openNote}
+      handleDeleteNote={toggleDeleteModal}
+      />
       else
         return null
       })

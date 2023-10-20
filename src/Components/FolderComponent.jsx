@@ -134,7 +134,6 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
 
   return (
     <motion.div
-
     layout="position"
     key={folder?._id}
     initial={{opacity:0, x:25}}
