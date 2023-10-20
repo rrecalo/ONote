@@ -29,6 +29,8 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
       if(event.target.value.length >= 4){
       initializeNewNote(event.target.value);
       setNoteNameInput("");
+      setIsHoveringAdd(false);
+      setIsCreating(false);
       setHasError(false);
       }
       else{
@@ -42,6 +44,8 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
       if(event.target.value.length >= 4){
         initializeNewFolder(event.target.value);
         setFolderNameInput("");
+        setIsHoveringAdd(false);
+        setIsCreating(false);
         setHasError(false);
       }
       else{
@@ -86,19 +90,21 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
             onMouseLeave={() => {setIsHoveringAdd(false); setIsCreating(false); setCreationType(undefined); setNoteNameInput(""); setFolderNameInput(""); setHasError(false);}}            onClick={() => {setIsCreating(true)}}
             whileTap={{backgroundColor:"rgb(231, 229, 228)", transition:{duration:0.5}}}
             className={`mt-5 flex h-[20%] w-full justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
-              <AnimatePresence>
              {
               isHoveringAdd  && !newNoteCooldown  ? 
                 <div className='w-full h-full'>
+                  <AnimatePresence mode='popLayout'>
+
                   {
                     creationType === 0 ?
-                    <motion.div className='flex flex-col gap-1 justify-center items-start pl-3 text-base font-light text-stone-800'
+                    <motion.div key="note_input"  className='flex flex-col gap-1 justify-center items-start pl-3 text-base font-light text-stone-800'
                     initial={{y:"200%"}}
                     animate={{y:"0%"}}
-                    transition={{duration:0.25}}>
+                    exit={{y:-25, opacity:0}}
+                    transition={{duration:0.4}}>
                       <div className='flex flex-row justify-start items-center'>
                       <AiOutlineFileText className='w-4 h-4'/>
-                      <input autoFocus id="new-name-input" className='outline-none bg-transparent w-full' placeholder='Note Name...' maxLength={18} value={noteNameInput}
+                      <input autoFocus autoComplete="off" spellCheck="false" id="new-name-input" className='outline-none bg-transparent w-full' placeholder='Note Name...' maxLength={18} value={noteNameInput}
                       onChange={(e)=>{setNoteNameInput(e.target.value); if(e.target.value.length >=4)setHasError(false);}} onKeyDown={handleNewNoteSubmit}
                       />
                       </div>
@@ -116,13 +122,14 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
                   }
                   {
                     creationType === 1 ?
-                    <motion.div className='flex flex-col gap-1 justify-center items-start pl-3 text-base font-light text-stone-800'
+                    <motion.div key="folder_input" className='flex flex-col gap-1 justify-center items-start pl-3 text-base font-light text-stone-800'
                     initial={{y:"200%"}}
                     animate={{y:"0%"}}
-                    transition={{duration:0.25}}>
+                    transition={{duration:0.4}}
+                    exit={{y:-25, opacity:0}}>
                     <div className='flex flex-row justify-start items-center'>
                     <AiOutlineFolder className='w-4 h-4'/>
-                    <input autoFocus id="new-folder-input" className='outline-none bg-transparent w-full' placeholder='Folder Name...' maxLength={18} value={folderNameInput}
+                    <input autoComplete="off" spellCheck="false" autoFocus id="new-folder-input" className='outline-none bg-transparent w-full' placeholder='Folder Name...' maxLength={18} value={folderNameInput}
                     onChange={(e)=>{setFolderNameInput(e.target.value); if(e.target.value.length >=4)setHasError(false);}} onKeyDown={handleNewFolderSubmit}/>
                     </div>
                     {
@@ -140,48 +147,46 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
                   }
 
                   {(isCreating && creationType === undefined) ?
-                    <div className='flex flex-col h-full justify-around items-start pl-3 text-base font-light text-stone-800' >
+                    <motion.div key="create" className='flex flex-col h-full justify-around items-start pl-3 text-base font-light text-stone-800' >
                       <motion.div className='flex items-center gap-1 w-full h-1/2' onClick={() => {updateCreationType(0)}}
                       initial={{opacity:0.5}}
                       animate={{opacity:1, x:5}}
-                      transition={{duration:0.25}}>
+                      exit={{opacity:0, x:-20, transition:{duration:0.25}}}
+                      transition={{duration:0.4}}>
                         <AiOutlineFileText className='w-4 h-4'/>
                         Note
                       </motion.div>
                       <motion.div className='flex items-center gap-1 w-full h-1/2' onClick={() => {updateCreationType(1)}}
                       initial={{opacity:0.5}}
                       animate={{opacity:1, x:5}}
-                      transition={{duration:0.25}}>
+                      exit={{opacity:0, x:-20, transition:{duration:0.25}}}
+                      transition={{duration:0.4}}>
                       <AiOutlineFolder className='w-4 h-4'/>
                         Folder
                       </motion.div>
-                    </div>
-                    :
-                    <></>
-                  }
-                  {!isCreating ?
-                    <motion.div className='flex justify-start items-center gap-1 pl-3 text-sm font-light text-stone-600' 
-                    initial={{opacity:0}}
-                    animate={
-                      isHoveringAdd ?
-                      {x:5, opacity:1, transition:{duration:0.25}} 
-                      : 
-                      {opacity:0}
-
-                    }>
-                      <AiOutlinePlus className='w-3 h-3 text-stone-600'/>
-                      create new
                     </motion.div>
                     :
                     <></>
                   }
-                  
+                  {!isCreating ?
+
+                  <motion.div key="create_new" className='flex justify-start items-center gap-1 pl-3 text-sm font-light text-stone-600' 
+                    initial={{opacity:0}}
+                    animate={{x:5, opacity:1, transition:{duration:0.5}}}
+                    exit={{x:125, opacity:0}} transition={{duration:0.5}}>
+                      <AiOutlinePlus className='w-3 h-3 text-stone-600'/>
+                      create new
+                    </motion.div>
+                     :
+                     <></>
+                    }
+
+                </AnimatePresence>
                 </div>
                 
                 : 
                 <></>
             }
-           </AnimatePresence>
           </motion.div>
         </div>
   )}
