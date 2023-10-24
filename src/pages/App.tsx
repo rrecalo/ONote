@@ -546,9 +546,9 @@ function App() {
           (preferences?.editorPosition === "center" ? EditorPosition.center : EditorPosition.start)}`}>
           <motion.div className='flex justify-between items-center gap-3 mt-5 pe-5 bg-transparent w-11/12'
           layout="position" initial={{width:"full"}} animate={{width:"full"}} transition={{duration:0.35}}>
-          <div className='w-3/4 max-w-[600px]'>
+          <div className='w-full'>
             <input
-            spellCheck={false} className='text-3xl pt-1 outline-none w-full max-w-[600px] text-stone-950' maxLength={32} value={workingNote?.title} onChange={handleTitleInput}
+            spellCheck={false} className='select-none text-3xl pt-1 outline-none w-full text-stone-950' maxLength={28} value={workingNote?.title} onChange={handleTitleInput}
             onKeyDown={handleTitleInputKeyPress}/>
             <motion.div 
              className={`text-[0.75rem] h-4 ${noteNameInputError === 1 ? 'text-red-600' : 'text-stone-400'}`}>
@@ -557,7 +557,7 @@ function App() {
               <motion.div
               initial={{opacity:0.5, y:-3}} 
               animate={{opacity:1, y:0}}
-              >{32 - (workingNote?.title?.length || 0)} characters remaining...</motion.div>
+              >{28 - (workingNote?.title?.length || 0)} characters remaining...</motion.div>
               :
               <></>
             }
