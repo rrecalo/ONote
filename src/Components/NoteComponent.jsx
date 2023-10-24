@@ -21,6 +21,7 @@ const NoteComponent = ({handleDragStart, handleReorderFolder, workingNote, note,
         t gap-1 pe-2 + ${workingNote?._id === note._id ? 'font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
         onClick={(e)=>{e.stopPropagation(); openNote(note?._id)}}
         onDrop={(e) =>handleReorderFolder(e, note)}
+        onDragOver={(e)=>{e.preventDefault();}}
         key={note?._id}>
           <div className='flex justify-center items-center gap -1'>
             <AiOutlineFileText className={`w-4 h-4

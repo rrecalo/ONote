@@ -295,6 +295,7 @@ function App() {
 
 
   function handleReorderFolder(event: any, thisNote : Note){
+    //console.log(thisNote);
     if(event.dataTransfer.types.includes("application/json")){
       const data = JSON.parse(event.dataTransfer.getData("application/json"));
       let droppedNote = data as Note;
@@ -312,8 +313,6 @@ function App() {
 
   //for rendering the existing notes in the sidebar!
   function renderNoteList(folders : Array<Folder>){
-
-    
 
     const elements = folders.map((folder, index) => {
       
