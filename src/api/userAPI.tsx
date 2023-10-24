@@ -5,6 +5,12 @@ import { Folder } from "../types/Folder";
 const BASE_URL = "http://localhost:3001";
 //http://localhost:3001/getUserNotes
 
+export async function getUser(email : string | undefined ){
+    let endpoint = "/getUser";
+    return axios.get(BASE_URL + endpoint, {params: {email : email}}).then((response) =>{return(response)});
+
+}
+
 export async function getUserPrefs(email : string | undefined){
     let endpoint = "/getUserPrefs";
     return axios.get(BASE_URL + endpoint, {params: {email : email}}).then((response) =>{return(response)});
@@ -36,6 +42,11 @@ export async function createFolder(email: string | undefined, folderName : strin
 export async function updateUserPrefs(email : string | undefined, prefs : any){
     let endpoint = "/updateUserPrefs";
     return axios.put(BASE_URL + endpoint, {email : email, prefs: prefs}).then((response) => {return(response)});
+}
+
+export async function updateUserLastNote(email : string | undefined, noteId : string){
+    let endpoint = "/updateUserLastNote";
+    return axios.put(BASE_URL + endpoint, {email : email, lastNoteId: noteId}).then((response) => {return(response)});
 }
 
 export async function updateNote(note : Note){
