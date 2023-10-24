@@ -2,7 +2,7 @@ import React , {useEffect, useState} from 'react';
 import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import TextEditor from '../Components/TextEditor';
-import {getUserNotes, createNote, deleteNote, getUserFolders, saveFolderName, saveFolderState, createFolder, deleteFolder, updateUserFolders, getUserPrefs, updateUserPrefs} from '../api/userAPI';
+import {getUserNotes, createNote, deleteNote, getUserFolders, saveFolderName, saveFolderState, createFolder, deleteFolder, updateUserFolders, getUserPrefs, updateUserPrefs, getUser, updateUserLastNote} from '../api/userAPI';
 import { Note } from '../types/Note'
 import { updateNote } from '../api/userAPI';
 import {AiOutlineCheck, AiOutlineFileText } from 'react-icons/ai';
@@ -156,20 +156,22 @@ function App() {
   //the setNotes() call triggers a re-render of the notes list in the sidebar
   //if loadFirstNote is 'true', then the current working note is set to the first one
   //that is returned from the database
-  function refreshNoteList(loadFirstNote: boolean){
+  function refreshNoteList(loadLastNote: boolean){
     getUserNotes(user?.email).then((response: any)=>{
       getUserFolders(user?.email).then(result =>{
       let fetchedFolders = result.data.sort((a : Folder, b : Folder) => a.order - b.order);
       let fetchedNotes = response.data;
       fetchedNotes = fetchedNotes?.sort((a : Note, b : Note) => a?.index - b.index);
-      
-      if(loadFirstNote){
-        let firstFolderNotes = fetchedNotes.filter((note : Note) => note?.folder === fetchedFolders[0]._id);
-        setWorkingNote(firstFolderNotes[0]);
-      }
+
       setNotes(fetchedNotes);
       setFolders(fetchedFolders);
-
+      if(loadLastNote){
+      getUser(user?.email).then(res =>{
+        if(res.data.lastNote){
+          setWorkingNote(fetchedNotes.filter((a : Note) => a._id === res.data.lastNote)[0] || fetchedNotes[0]);
+        }
+      });
+      }
     });
     });
   }
@@ -263,14 +265,13 @@ function App() {
   //set the new working note to be the one with the matching id parameter
   function openNote(id: string){
     if(workingNote){
-      console.log("new note opened, prev note saved :", workingNote.title);
-      //console.log(workingNote);
       saveNoteContent(workingNote._id);
-      //updateNoteContent(workingNote._id, workingNote.text);
       setChangesPrompt(2);
     }
     setWorkingNote(notes.find((note : Note) => note._id === id));
     setChangesPrompt(2);
+    updateUserLastNote(user?.email, id);
+    
   }
 
   //get a note object from state by ID -> used in TextEditor to fetch a newly selected note's content
