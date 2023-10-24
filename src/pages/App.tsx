@@ -13,7 +13,7 @@ import { Folder } from '../types/Folder';
 import FolderComponent from '../Components/FolderComponent';
 import { useNavigate } from 'react-router-dom';
 import ConfirmDeleteFolderModal from '../Components/ConfirmDeleteFolderModal';
-import { motion } from 'framer-motion';
+import { AnimatePresence, MotionProps, motion } from 'framer-motion';
 import NoteComponent from '../Components/NoteComponent';
 import PreferenceSelector from '../Components/PreferenceSelector';
 
@@ -34,7 +34,25 @@ function App() {
   const [preferences, setPreferences] = useState<Preferences>();
   const [folders, setFolders] = useState<Folder[]>([]);
   const [noteNameInputError, setNoteNameInputError] = useState(0);
+  const [changesPrompt, setChangesPrompt] = useState(0);
   const navigate = useNavigate();
+
+  const changeVariants = {
+    initial:{
+      opacity:0,
+      y:-5,
+    },
+    animate:{
+      opacity:1,
+      y:0,
+      transition:{duration:0.6}
+    },
+    exit:{
+      opacity:0,
+      y:5,
+      transition:{duration:0.3}
+    }
+  }
 
 
   useEffect(()=>{
@@ -51,6 +69,16 @@ function App() {
       refreshNoteList(true);
     }
   },[user]);
+
+  useEffect(()=>{
+    if(changesPrompt === 0){
+      const hideChanges = setTimeout(()=>{
+
+        setChangesPrompt(2);
+      }, 3000)
+      return () => {clearInterval(hideChanges)};
+    };
+  }, [changesPrompt])
 
   useEffect(()=>{
 
@@ -154,9 +182,15 @@ function App() {
       //update the note in React state
       setNotes(updatedNotes);
       //call a database update
-      updateNote(noteToUpdate as Note);
+      //updateNote(noteToUpdate as Note);
+      //saveNoteContent(noteToUpdate._id);
     }
     
+  }
+
+  function saveNoteContent(id: string){
+    const noteToSave = notes.find((note : Note) => note._id === id);
+    updateNote(noteToSave as Note);
   }
 
   //updates the note in the 'notes' state as well as the database!
@@ -227,8 +261,16 @@ function App() {
   }
 
   //set the new working note to be the one with the matching id parameter
-  function openNote(id: string | undefined){
+  function openNote(id: string){
+    if(workingNote){
+      console.log("new note opened, prev note saved :", workingNote.title);
+      //console.log(workingNote);
+      saveNoteContent(workingNote._id);
+      //updateNoteContent(workingNote._id, workingNote.text);
+      setChangesPrompt(2);
+    }
     setWorkingNote(notes.find((note : Note) => note._id === id));
+    setChangesPrompt(2);
   }
 
   //get a note object from state by ID -> used in TextEditor to fetch a newly selected note's content
@@ -502,7 +544,7 @@ function App() {
         <motion.div className={`flex-grow p-2 flex flex-col h-full ${
           (preferences?.editorWidth === "full" ? EditorWidth.full : EditorWidth.half)  + " " + 
           (preferences?.editorPosition === "center" ? EditorPosition.center : EditorPosition.start)}`}>
-          <motion.div className='flex w-full justify-between items-center gap-3 mt-5 pe-5 bg-transparent'
+          <motion.div className='flex justify-between items-center gap-3 mt-5 pe-5 bg-transparent w-11/12'
           layout="position" initial={{width:"full"}} animate={{width:"full"}} transition={{duration:0.35}}>
           <div className='w-3/4 max-w-[600px]'>
             <input
@@ -527,17 +569,33 @@ function App() {
             <></>}
             </motion.div>
           </div>
-          {
-          confirmTitle ?
-          <button className='flex hover:bg-stone-200 px-2 py-1 rounded-md content-center items-center' onClick={performTitleChange}>
-            <AiOutlineCheck /> confirm
-          </button>
-          : 
-          <></>
-          }
-      
+          <div className='flex gap-2 justify-end items-center w-1/2'>
+            <AnimatePresence mode='popLayout'>
+            {
+            confirmTitle ?
+            <motion.button
+            layout="position"
+            key="confirm_title_button" className='flex hover:bg-stone-200 px-2 py-1 rounded-md content-center items-center' onClick={performTitleChange}
+            initial={{opacity:0, y:-3}}
+            animate={{opacity:1, y:0}}
+            exit={{opacity:0, y:-3}}>
+              <AiOutlineCheck /> save title 
+            </motion.button>
+            : 
+            <></>
+            }
+            {
+              changesPrompt === 0 ?
+              <motion.div layout="position" key="saved_changes" variants={changeVariants} initial="initial" animate="animate" exit="exit">changes saved</motion.div>
+              : changesPrompt === 1 ?
+              <motion.div layout="position" key="unsaved_changes" variants={changeVariants} initial="initial" animate="animate" exit="exit">unsaved changes</motion.div>
+              : <motion.div layout="position" key="no_changes"></motion.div>
+            }
+            </AnimatePresence>
+          </div>
           </motion.div>
-            <TextEditor noteId={workingNote?._id} getNoteById={getNoteById} updateNoteContent={updateNoteContent} />
+            <TextEditor noteId={workingNote?._id} getNoteById={getNoteById} updateNoteContent={updateNoteContent} setChangesPrompt={setChangesPrompt} 
+            saveNoteContent={saveNoteContent}/>
           </motion.div>
 
       </div>
