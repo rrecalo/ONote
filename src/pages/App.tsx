@@ -544,7 +544,7 @@ function App() {
         <motion.div className={`flex-grow p-2 flex flex-col h-full ${
           (preferences?.editorWidth === "full" ? EditorWidth.full : EditorWidth.half)  + " " + 
           (preferences?.editorPosition === "center" ? EditorPosition.center : EditorPosition.start)}`}>
-          <motion.div className='flex justify-between items-center gap-3 mt-5 pe-5 bg-transparent w-11/12'
+          <motion.div className='flex justify-between items-center gap-3 mt-5 ml-2 pe-5 bg-transparent w-11/12'
           layout="position" initial={{width:"full"}} animate={{width:"full"}} transition={{duration:0.35}}>
           <div className='w-full'>
             <input
