@@ -68,7 +68,7 @@ const PreferenceSelector = ({preferences, handlePreferenceChange}) => {
     }
 
   return (
-    <motion.div ref={modalRef} className='absolute top-5 right-10 w-8 h-8' layout="position">
+    <motion.div ref={modalRef} className='absolute top-10 right-10 w-8 h-8' layout="position">
         <motion.div className='rounded-md' 
         animate={{backgroundColor: "rgb(255, 255, 255)"}}
         whileHover={{backgroundColor: "rgb(214, 211, 209)"}}
