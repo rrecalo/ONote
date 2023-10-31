@@ -35,7 +35,7 @@ root.render(
     domain="notes158694.us.auth0.com"
     clientId="JTgCuc1CydAfp31fjwR0Lr9WEX6WWdGV"
     authorizationParams={{
-      redirect_uri: "https://notes-app-rr.netlify.app/app"
+      redirect_uri: "https://onote.cloud/app"
     }}>
       <RouterProvider router={router} />
   </Auth0Provider>

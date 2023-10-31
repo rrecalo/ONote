@@ -2,7 +2,7 @@ import axios from "axios";
 import {Note} from '../types/Note';
 import { Folder } from "../types/Folder";
 
-const BASE_URL = "http://52.90.99.233";
+const BASE_URL = "https://api.onote.cloud";
 //http://localhost:3001/getUserNotes
 
 export async function getUser(email : string | undefined ){
