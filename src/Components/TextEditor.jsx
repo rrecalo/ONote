@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import EditorToolbar, {modules, formats} from './EditorToolbar.jsx'
 import 'react-quill/dist/quill.snow.css';
-import {motion} from 'framer-motion'
+import {motion, AnimatePresence} from 'framer-motion'
 import './TextEditor.css'
+import SidebarPlaceholder, { placeholderVariants } from './Placeholder.jsx';
 
 function TextEditor({noteId, getNoteById, updateNoteContent, setChangesPrompt, saveNoteContent, ...props}) {
 
@@ -11,6 +12,18 @@ function TextEditor({noteId, getNoteById, updateNoteContent, setChangesPrompt, s
   const [timer, setTimer] = useState(null);
   const [countdown, setCountdown] = useState(0);
   const [noteChanged, setNoteChanged] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(()=>{
+    if(noteId){
+      const loadingTimeout = setTimeout(()=>{
+        setLoading(false);
+
+      }, 500);
+      return ()=>{clearInterval(loadingTimeout);}
+    };
+  }, [noteId])
+
 
   function StartTimer(){
     setChangesPrompt(1);
@@ -83,15 +96,28 @@ useEffect(()=>{
     initial={{opacity:0, y:-10}}
     animate={{opacity:1, y:0}}
     transition={{duration:0.35}}>
-      <EditorToolbar />
-      <ReactQuill
-        theme="snow"
-        value={value}
-        onChange={handleChange}
-        placeholder={"Write something awesome..."}
-        modules={modules}
-        formats={formats}
-      />
+      <AnimatePresence mode='wait'>
+      {
+      loading ?
+      <>
+        <SidebarPlaceholder />
+        <SidebarPlaceholder />
+      </>
+      :
+        <>
+        <EditorToolbar key="editor_toolbar"/>
+        <ReactQuill
+          key="quill_editor"
+          theme="snow"
+          value={value}
+          onChange={handleChange}
+          placeholder={"Write something awesome..."}
+          modules={modules}
+          formats={formats}
+        />
+        </>
+      }
+      </AnimatePresence>
     </motion.div>
   );
 }

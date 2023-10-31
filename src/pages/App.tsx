@@ -17,12 +17,29 @@ import { AnimatePresence, MotionProps, motion } from 'framer-motion';
 import NoteComponent from '../Components/NoteComponent';
 import PreferenceSelector from '../Components/PreferenceSelector';
 
+const placeholderVariants = {
+  initial:{
+      //scaleX: 0,
+      backgroundColor: 'rgb(214, 211, 209)',
+  },
+  animate:{
+      //scaleX:1,
+      backgroundColor: 'rgb(120, 113, 108)',
+      transition:{
+          repeat: Infinity,
+          repeatType: "mirror",
+          duration: 1.5,
+          //delay:stagger
+      },
+  },
+}
 
 
 function App() {
 
   const { user } = useAuth0();
   const [notes, setNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [workingNote, setWorkingNote] = useState<Note>();
   const [confirmTitle, setConfirmTitle] = useState<boolean>(false);
   const [lastTitleChange, setLastTitleChange] = useState<Date>();
@@ -58,6 +75,7 @@ function App() {
   useEffect(()=>{
     if(user){
       console.log("successfully logged in as : " + user.email);
+      try{
       getUserPrefs(user?.email).then(res =>{
         if(res?.data?.editorWidth === "full"){
           setPreferences({editorWidth: "full", editorPosition: "center"});
@@ -67,6 +85,15 @@ function App() {
         }
       });
       refreshNoteList(true);
+      const loadingTimeout = setTimeout(()=>{
+        setLoading(false);
+
+      }, 600);
+      return ()=>{clearInterval(loadingTimeout);}
+    }
+    catch(error){
+      console.error(error);
+    }
     }
   },[user]);
 
@@ -167,9 +194,12 @@ function App() {
       setFolders(fetchedFolders);
       if(loadLastNote){
       getUser(user?.email).then(res =>{
-        if(res.data.lastNote){
+        try{
+        if(res?.data.lastNote){
           setWorkingNote(fetchedNotes.filter((a : Note) => a._id === res.data.lastNote)[0] || fetchedNotes[0]);
         }
+      }
+      catch(err){console.error(err);}
       });
       }
     });
@@ -235,17 +265,22 @@ function App() {
   function initializeNewNote(noteName? : string){
     if(newNoteCooldown) return;
 
-    if(user?.email){
-      console.log("New note!");
-      createNote(user.email, noteName || "", "").then((response: any) => 
-      { 
-        //add it to the notes state, and THEN set it as the working note!
-        setNotes(notes => [...notes, response?.data.newNote as Note]);
-        setWorkingNote(response?.data.newNote as Note);
-        refreshNoteList(false);
-        setNewNoteCooldown(true);
-      });
+    try{
+      if(user?.email){
+        console.log("New note!");
+        createNote(user.email, noteName || "", "").then((response: any) => 
+        { 
+          //add it to the notes state, and THEN set it as the working note!
+          setNotes(notes => [...notes, response?.data.newNote as Note]);
+          setWorkingNote(response?.data.newNote as Note);
+          refreshNoteList(false);
+          setNewNoteCooldown(true);
+        });
 
+      }
+    }
+    catch(error){
+      console.error(error);
     }
   }
   
@@ -356,6 +391,7 @@ function App() {
         note={note}
         openNote={openNote}
         handleDeleteNote={toggleDeleteModal}
+        key={note?._id}
         />));
 
 
@@ -388,6 +424,7 @@ function App() {
       note={note}
       openNote={openNote}
       handleDeleteNote={toggleDeleteModal}
+      key={note?._id}
       />
       else
         return null
@@ -546,29 +583,39 @@ function App() {
           (preferences?.editorPosition === "center" ? EditorPosition.center : EditorPosition.start)}`}>
           <motion.div className='flex justify-between items-center gap-3 mt-5 ml-2 pe-5 bg-transparent w-11/12'
           layout="position" initial={{width:"full"}} animate={{width:"full"}} transition={{duration:0.35}}>
-          <div className='w-full'>
-            <input
-            spellCheck={false} className='select-none text-3xl pt-1 outline-none w-full text-stone-950' maxLength={28} value={workingNote?.title} onChange={handleTitleInput}
-            onKeyDown={handleTitleInputKeyPress}/>
-            <motion.div 
-             className={`text-[0.75rem] h-4 ${noteNameInputError === 1 ? 'text-red-600' : 'text-stone-400'}`}>
-            {
-              (confirmTitle && noteNameInputError !== 1) ?
+          {
+            loading ?
+            <div className='flex flex-col gap-1 w-full h-10 justify-center items-center'>
+            <motion.div className='w-full h-3 rounded-full bg-stone-600'
+            variants={placeholderVariants as any} initial="initial" animate="animate"></motion.div>
+            </div>
+            :
+            <div className='w-full'>
+              <input
+              spellCheck={false} className='select-none text-3xl pt-1 outline-none w-full text-stone-950' maxLength={28} value={workingNote?.title} onChange={handleTitleInput}
+              onKeyDown={handleTitleInputKeyPress}/>
+              <motion.div 
+              className={`text-[0.75rem] h-4 ${noteNameInputError === 1 ? 'text-red-600' : 'text-stone-400'}`}>
+              {
+                (confirmTitle && noteNameInputError !== 1) ?
+                <motion.div
+                initial={{opacity:0.5, y:-3}} 
+                animate={{opacity:1, y:0}}
+                >{28 - (workingNote?.title?.length || 0)} characters remaining...</motion.div>
+                :
+                <></>
+              }
+              {noteNameInputError === 1 ?
               <motion.div
               initial={{opacity:0.5, y:-3}} 
-              animate={{opacity:1, y:0}}
-              >{28 - (workingNote?.title?.length || 0)} characters remaining...</motion.div>
+              animate={{opacity:1, y:0}}>Please enter at least {4 - (workingNote?.title?.length || 0)} more character{workingNote?.title?.length === 3 ? '' : 's'}...</motion.div>
               :
-              <></>
-            }
-            {noteNameInputError === 1 ?
-            <motion.div
-            initial={{opacity:0.5, y:-3}} 
-            animate={{opacity:1, y:0}}>Please enter at least {4 - (workingNote?.title?.length || 0)} more character{workingNote?.title?.length === 3 ? '' : 's'}...</motion.div>
-            :
-            <></>}
-            </motion.div>
-          </div>
+              <></>}
+              </motion.div>
+            </div>
+
+          }
+
           <div className='flex gap-2 justify-end items-center w-1/2'>
             <AnimatePresence mode='popLayout'>
             {

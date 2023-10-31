@@ -2,18 +2,30 @@ import React, {useEffect, useState, useRef} from 'react';
 import PreferenceSelector from './PreferenceSelector';
 import { AiOutlineFolder, AiOutlinePlus, AiOutlineFileText } from 'react-icons/ai';
 import {AnimatePresence, motion} from 'framer-motion'
+import SidebarPlaceholder from './Placeholder';
 
 const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNoteCooldown, handlePref, pref, folders, initializeNewFolder, notes, moveNoteOutOfFolder, setFolders, ...props}) => {
 
 
   const [isHoveringAdd, setIsHoveringAdd] = useState(false);
   const [confirmAdd, setConfirmAdd] = useState(false);
+  const [loading, setLoading] = useState(true);
   //undefined/null for neither -> 0 for Note || 1 for Folder
   const [creationType, setCreationType] = useState();
   const [isCreating, setIsCreating] = useState(false);
   const [noteNameInput, setNoteNameInput] = useState("");
   const [folderNameInput, setFolderNameInput] = useState("");
   const [hasError, setHasError] = useState(false);
+
+  useEffect(()=>{
+    if(notes && folders){
+      const loadingTimeout = setTimeout(()=>{
+        setLoading(false);
+
+      }, 500);
+      return ()=>{clearInterval(loadingTimeout);}
+    };
+  }, [notes, folders])
 
   useEffect(()=>{
     if(confirmAdd){
@@ -81,9 +93,16 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
               </div>
             </div>
           <AnimatePresence mode='popLayout'>
+          {
+          loading ? 
+          <SidebarPlaceholder/>: 
+          <>
           {renderNoteList(folders)}
           <hr className='border-0 my-1'/>
           {renderTopLevelNotes(notes)}
+          </>
+          }
+          
           </AnimatePresence>
 
           </div>
