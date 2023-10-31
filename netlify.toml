@@ -1,0 +1,10 @@
+[[redirects]]
+  from = "/app"
+  to = "/app"
+  status = 200
+  query = {path = ":code"}
+
+[[headers]]
+  for = "/*"
+    [headers.values]
+    Access-Control-Allow-Origin = "*"
