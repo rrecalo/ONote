@@ -17,8 +17,8 @@ const NoteComponent = ({handleDragStart, handleReorderFolder, workingNote, note,
         exit={{opacity:0, y:-5, backgroundColor: "#fafaf9", transition:{duration:0.15}}}
         onMouseEnter={()=>setHover(true)}
         onMouseLeave={()=>setHover(false)}
-        draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-between items-center pl-3 w-full cursor-pointer
-        t gap-1 pe-2 + ${workingNote?._id === note._id ? 'font-semibold text-stone-950' : 'bg-transparent text-stone-500'}`} 
+        draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-between items-center pl-3 w-full cursor-pointer text-sm
+        t gap-1 pe-2 + ${workingNote?._id === note._id ? 'text-stone-950' : 'bg-transparent text-stone-500'}`} 
         onClick={(e)=>{e.stopPropagation(); openNote(note?._id)}}
         onDrop={(e) =>handleReorderFolder(e, note)}
         onDragOver={(e)=>{e.preventDefault();}}

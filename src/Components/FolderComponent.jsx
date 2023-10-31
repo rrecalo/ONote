@@ -181,12 +181,12 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
         {
         isHover ?
         <div className='flex w-full h-full justify-start gap-1 items-start'>
-          <AiFillDelete className='text-stone-600' onClick={handleDeleteClicked}/>
+          <AiFillDelete className='text-stone-600 cursor-pointer' onClick={handleDeleteClicked}/>
           {
             !editingName ?
-          <HiOutlinePencil className='text-stone-500' onClick={toggleEditingName}/>
+          <HiOutlinePencil className='text-stone-500 cursor-pointer' onClick={toggleEditingName}/>
           :
-          <AiOutlineCheck className='text-stone-500' onClick={toggleEditingName}/>
+          <AiOutlineCheck className='text-stone-500 cursor-pointer' onClick={toggleEditingName}/>
           }
         </div>
         : <></>
