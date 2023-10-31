@@ -2,7 +2,7 @@ import axios from "axios";
 import {Note} from '../types/Note';
 import { Folder } from "../types/Folder";
 
-const BASE_URL = "http://localhost:3001";
+const BASE_URL = "http://52.90.99.233";
 //http://localhost:3001/getUserNotes
 
 export async function getUser(email : string | undefined ){
