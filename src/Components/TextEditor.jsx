@@ -21,7 +21,10 @@ function TextEditor({noteId, getNoteById, updateNoteContent, setChangesPrompt, s
 
       }, 500);
       return ()=>{clearInterval(loadingTimeout);}
-    };
+    }
+    if(!noteId){
+      setLoading(true);
+    }
   }, [noteId])
 
 

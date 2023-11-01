@@ -1,10 +1,10 @@
-import React, {useEffect, useState, useRef} from 'react';
-import PreferenceSelector from './PreferenceSelector';
+import React, { useEffect, useState } from 'react';
 import { AiOutlineFolder, AiOutlinePlus, AiOutlineFileText } from 'react-icons/ai';
 import {AnimatePresence, motion} from 'framer-motion'
 import SidebarPlaceholder from './Placeholder';
+import EmptyListPlaceholder from './EmptyListPlaceholder';
 
-const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNoteCooldown, handlePref, pref, folders, initializeNewFolder, notes, moveNoteOutOfFolder, setFolders, ...props}) => {
+const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNoteCooldown, handlePref, pref, folders, initializeNewFolder, notes, moveNoteOutOfFolder, setFolders, showNotePlaceholder, ...props}) => {
 
 
   const [isHoveringAdd, setIsHoveringAdd] = useState(false);
@@ -88,7 +88,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
 
           <div id="your-notes-section" className='flex flex-col justify-center items-start gap-0 mt-5 max-w-full w-full outline-none'>
             <div className='flex flex-row items-center text-lg text-stone-800 text-left gap-1 pl-3 outline-none'>
-              <div className='font-bold text-xl text-stone-600 outline-none'>
+              <div className='font-bold text-xl text-stone-600 outline-none mb-2'>
                 Notes
               </div>
             </div>
@@ -111,7 +111,11 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
             onMouseEnter={() => setIsHoveringAdd(true)}
             onMouseLeave={() => {setIsHoveringAdd(false); setIsCreating(false); setCreationType(undefined); setNoteNameInput(""); setFolderNameInput(""); setHasError(false);}}            onClick={() => {setIsCreating(true)}}
             whileTap={{backgroundColor:"rgb(231, 229, 228)", transition:{duration:0.5}}}
-            className={`mt-5 flex h-[20%] w-full justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
+            className={`mt-5 flex flex-col h-[20%] w-full justify-start items-start ${newNoteCooldown ? 'display-none' : ''}`}>
+              {
+                showNotePlaceholder && !isHoveringAdd ?
+                <EmptyListPlaceholder key="note-placeholder" />:<></>
+              }
              {
               isHoveringAdd  && !newNoteCooldown  ? 
                 <div className='w-full h-full'>
