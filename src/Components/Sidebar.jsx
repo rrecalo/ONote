@@ -1,10 +1,10 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState } from 'react';
 import { AiOutlineFolder, AiOutlinePlus, AiOutlineFileText } from 'react-icons/ai';
 import {AnimatePresence, motion} from 'framer-motion'
 import SidebarPlaceholder from './Placeholder';
-import { useAuth0 } from '@auth0/auth0-react';
+import EmptyListPlaceholder from './EmptyListPlaceholder';
 
-const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNoteCooldown, handlePref, pref, folders, initializeNewFolder, notes, moveNoteOutOfFolder, setFolders, ...props}) => {
+const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNoteCooldown, handlePref, pref, folders, initializeNewFolder, notes, moveNoteOutOfFolder, setFolders, showNotePlaceholder, ...props}) => {
 
 
   const [isHoveringAdd, setIsHoveringAdd] = useState(false);
@@ -16,7 +16,6 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
   const [noteNameInput, setNoteNameInput] = useState("");
   const [folderNameInput, setFolderNameInput] = useState("");
   const [hasError, setHasError] = useState(false);
-  const {user} = useAuth0();
 
   useEffect(()=>{
     if(notes && folders){
@@ -112,7 +111,11 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
             onMouseEnter={() => setIsHoveringAdd(true)}
             onMouseLeave={() => {setIsHoveringAdd(false); setIsCreating(false); setCreationType(undefined); setNoteNameInput(""); setFolderNameInput(""); setHasError(false);}}            onClick={() => {setIsCreating(true)}}
             whileTap={{backgroundColor:"rgb(231, 229, 228)", transition:{duration:0.5}}}
-            className={`mt-5 flex h-[20%] w-full justify-center items-start ${newNoteCooldown ? 'display-none' : ''}`}>
+            className={`mt-5 flex flex-col h-[20%] w-full justify-start items-start ${newNoteCooldown ? 'display-none' : ''}`}>
+              {
+                showNotePlaceholder && !isHoveringAdd ?
+                <EmptyListPlaceholder key="note-placeholder" />:<></>
+              }
              {
               isHoveringAdd  && !newNoteCooldown  ? 
                 <div className='w-full h-full'>

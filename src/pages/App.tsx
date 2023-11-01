@@ -52,6 +52,7 @@ function App() {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [noteNameInputError, setNoteNameInputError] = useState(0);
   const [changesPrompt, setChangesPrompt] = useState(0);
+  const [showPlaceholder, setShowPlaceholder] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const changeVariants = {
@@ -127,15 +128,21 @@ function App() {
   useEffect(()=>{
     //if there are no notes, we want to make a new one so the editor don't bug out!
     if(notes.length === 0){
-      setTimeout(()=>
+      setWorkingNote(undefined);
+      setLoading(true);
+      const showPlaceholder = setTimeout(()=>
       {
-        initializeNewNote();
-      }, 100);
+        setShowPlaceholder(true);
+      }, 2000);
+      return ()=>{clearInterval(showPlaceholder)}
     }
     //if there is some notes, but none of them are the current 'workingNote', then we need to reselect another
     //existing note as the workingNote so our editor can rerender!
     else if(!notes.some(note => note._id === workingNote?._id)){
       setWorkingNote(notes[0]);
+    }
+    if(notes.length > 0 ){
+      setShowPlaceholder(false);
     }
   }, [notes])
 
@@ -575,7 +582,7 @@ function App() {
       <div className='flex flex-row justify-start items-start w-full h-[100vh]'>
         <div className='sm:w-1/4 lg:w-3/12 xl:w-2/12 h-full'>
           <Sidebar setFolders={setFolders} moveNoteOutOfFolder={moveNoteOutOfFolder}  notes={notes}  renderTopLevelNotes={renderTopLevelNotes} folders={folders} initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}
-          initializeNewFolder={initializeNewFolder}/>
+          initializeNewFolder={initializeNewFolder} showNotePlaceholder={showPlaceholder}/>
         </div>
         {/* ${preferences?.editorWidth  + " " + preferences?.editorPosition} */}
         <motion.div className={`flex-grow p-2 flex flex-col h-full ${
