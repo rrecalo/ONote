@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import ConfirmDeleteFolderModal from '../Components/ConfirmDeleteFolderModal';
 import { AnimatePresence, MotionProps, motion } from 'framer-motion';
 import NoteComponent from '../Components/NoteComponent';
-import PreferenceSelector from '../Components/PreferenceSelector';
+import SettingsMenu from '../Components/SettingsMenu';
 
 const placeholderVariants = {
   initial:{
@@ -568,7 +568,7 @@ function App() {
   
   return (
     <div className="App">
-      <PreferenceSelector handlePreferenceChange={handlePreferenceUpdate} preferences={preferences}/>
+      <SettingsMenu handlePreferenceChange={handlePreferenceUpdate} preferences={preferences}/>
       <ConfirmDeleteModal showModal={showDeleteNoteModal} closeModal={toggleDeleteModal} deleteNote={handleDeleteNote} workingNoteTitle={workingNote?.title}/>
       <ConfirmDeleteFolderModal showModal={showDeleteFolderModal} closeModal={() => { setFolderToDelete(undefined); setShowDeleteFolderModal(false); } } 
       deleteFolder={handleDeleteFolder} folder={folderToDelete} />

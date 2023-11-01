@@ -1,8 +1,8 @@
 import React, {useEffect, useState, useRef} from 'react';
-import PreferenceSelector from './PreferenceSelector';
 import { AiOutlineFolder, AiOutlinePlus, AiOutlineFileText } from 'react-icons/ai';
 import {AnimatePresence, motion} from 'framer-motion'
 import SidebarPlaceholder from './Placeholder';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNoteCooldown, handlePref, pref, folders, initializeNewFolder, notes, moveNoteOutOfFolder, setFolders, ...props}) => {
 
@@ -16,6 +16,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
   const [noteNameInput, setNoteNameInput] = useState("");
   const [folderNameInput, setFolderNameInput] = useState("");
   const [hasError, setHasError] = useState(false);
+  const {user} = useAuth0();
 
   useEffect(()=>{
     if(notes && folders){
@@ -88,7 +89,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
 
           <div id="your-notes-section" className='flex flex-col justify-center items-start gap-0 mt-5 max-w-full w-full outline-none'>
             <div className='flex flex-row items-center text-lg text-stone-800 text-left gap-1 pl-3 outline-none'>
-              <div className='font-bold text-xl text-stone-600 outline-none'>
+              <div className='font-bold text-xl text-stone-600 outline-none mb-2'>
                 Notes
               </div>
             </div>
