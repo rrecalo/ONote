@@ -83,7 +83,7 @@ const SettingsMenu = ({preferences, handlePreferenceChange}) => {
                 <div className='italic text-stone-600 text-xs'>
                     Logged In
                 </div>
-                <div className='text-900'>
+                <div className='text-900 w-full break-all'>
                     {user.name}
                 </div>
             </div>
