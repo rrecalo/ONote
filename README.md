@@ -9,3 +9,9 @@ A web application for creating, editing, storing, and organizing rich-text note 
 
 ### Built With
 [![My Skills](https://skillicons.dev/icons?i=react,tailwind,nodejs,express,aws,mongodb,netlify,nginx)](https://skillicons.dev)
+
+Node/Expresss JS backend hosted on an AWS EC2 Ubuntu instance using an nginx proxy equipped with load balancing
+
+React/Tailwind frontend hosted on Netlify with automated CI/CD pipeline
+
+Database running on free MongoDB cluster
