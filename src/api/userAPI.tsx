@@ -11,20 +11,9 @@ export async function getUser(email : string | undefined ){
 
 }
 
-export async function getUserPrefs(email : string | undefined){
-    let endpoint = "/getUserPrefs";
-    return axios.get(BASE_URL + endpoint, {params: {email : email}}).then((response) =>{return(response)});
-}
-
 export async function getUserNotes(email : string | undefined){
     
     let endpoint = "/getUserNotes";
-    return axios.get(BASE_URL + endpoint, {params: {email : email}}).then((response) =>{return(response)});
-}
-
-export async function getUserFolders(email : string | undefined){
-    
-    let endpoint = "/getUserFolders";
     return axios.get(BASE_URL + endpoint, {params: {email : email}}).then((response) =>{return(response)});
 }
 

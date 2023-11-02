@@ -2,10 +2,10 @@ import React , {useEffect, useState} from 'react';
 import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import TextEditor from '../Components/TextEditor';
-import {getUserNotes, createNote, deleteNote, getUserFolders, saveFolderName, saveFolderState, createFolder, deleteFolder, updateUserFolders, getUserPrefs, updateUserPrefs, getUser, updateUserLastNote} from '../api/userAPI';
+import {getUserNotes, createNote, deleteNote, saveFolderName, saveFolderState, createFolder, deleteFolder, updateUserFolders, updateUserPrefs, getUser, updateUserLastNote} from '../api/userAPI';
 import { Note } from '../types/Note'
 import { updateNote } from '../api/userAPI';
-import {AiOutlineCheck, AiOutlineFileText } from 'react-icons/ai';
+import {AiOutlineCheck, } from 'react-icons/ai';
 import Sidebar from '../Components/Sidebar';
 import ConfirmDeleteModal from '../Components/ConfirmDeleteModal';
 import {EditorPosition, EditorWidth, Preferences} from '../types/Preferences';
@@ -13,7 +13,7 @@ import { Folder } from '../types/Folder';
 import FolderComponent from '../Components/FolderComponent';
 import { useNavigate } from 'react-router-dom';
 import ConfirmDeleteFolderModal from '../Components/ConfirmDeleteFolderModal';
-import { AnimatePresence, MotionProps, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import NoteComponent from '../Components/NoteComponent';
 import SettingsMenu from '../Components/SettingsMenu';
 
@@ -77,11 +77,11 @@ function App() {
     if(user){
       console.log("successfully logged in as : " + user.email);
       try{
-      getUserPrefs(user?.email).then(res =>{
-        if(res?.data?.editorWidth === "full"){
+      getUser(user?.email).then(res =>{
+        if(res?.data?.prefs.editorWidth === "full"){
           setPreferences({editorWidth: "full", editorPosition: "center"});
         }
-        else if(res?.data?.editorWidth === "half"){
+        else if(res?.data?.prefs.editorWidth === "half"){
           setPreferences({editorWidth: "half", editorPosition: "center"});
         }
       });
@@ -192,22 +192,20 @@ function App() {
   //that is returned from the database
   function refreshNoteList(loadLastNote: boolean){
     getUserNotes(user?.email).then((response: any)=>{
-      getUserFolders(user?.email).then(result =>{
-      let fetchedFolders = result.data.sort((a : Folder, b : Folder) => a.order - b.order);
+      getUser(user?.email).then(result =>{
+      let fetchedFolders = result.data.folders.sort((a : Folder, b : Folder) => a.order - b.order);
       let fetchedNotes = response.data;
       fetchedNotes = fetchedNotes?.sort((a : Note, b : Note) => a?.index - b.index);
 
       setNotes(fetchedNotes);
       setFolders(fetchedFolders);
       if(loadLastNote){
-      getUser(user?.email).then(res =>{
         try{
-        if(res?.data.lastNote){
-          setWorkingNote(fetchedNotes.filter((a : Note) => a._id === res.data.lastNote)[0] || fetchedNotes[0]);
+          setWorkingNote(fetchedNotes.filter((a : Note) => a._id === result.data.lastNote)[0] || fetchedNotes[0]);
         }
-      }
-      catch(err){console.error(err);}
-      });
+        catch(err){
+          console.error(err);
+        }
       }
     });
     });
