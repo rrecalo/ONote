@@ -18,7 +18,7 @@ const NoteComponent = ({handleDragStart, handleReorderFolder, workingNote, note,
         onMouseEnter={()=>setHover(true)}
         onMouseLeave={()=>setHover(false)}
         draggable onDragStart={(e) => handleDragStart(e, note)} className={`flex flex-row justify-between items-center pl-3 w-full cursor-pointer text-sm
-        t gap-1 pe-2 + ${workingNote?._id === note._id ? 'text-stone-950' : 'bg-transparent text-stone-500'}`} 
+        t gap-1 pe-2 whitespace-nowrap + ${workingNote?._id === note._id ? 'text-stone-950' : 'bg-transparent text-stone-500'}`} 
         onClick={(e)=>{e.stopPropagation(); openNote(note?._id)}}
         onDrop={(e) =>handleReorderFolder(e, note)}
         onDragOver={(e)=>{e.preventDefault();}}

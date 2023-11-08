@@ -43,7 +43,9 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
       setNoteNameInput("");
       setIsHoveringAdd(false);
       setIsCreating(false);
+      setCreationType(2);
       setHasError(false);
+      document.getElementById("sidebar").focus();
       }
       else{
         setHasError(true);
@@ -58,7 +60,9 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
         setFolderNameInput("");
         setIsHoveringAdd(false);
         setIsCreating(false);
+        setCreationType(2);
         setHasError(false);
+        document.getElementById("sidebar").focus();
       }
       else{
         setHasError(true);
@@ -109,9 +113,8 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
           <motion.div 
             onDrop={handleNoteDrop} onDragOver={(e)=>{e.preventDefault()}}
             onMouseEnter={() => setIsHoveringAdd(true)}
-            onMouseLeave={() => {setIsHoveringAdd(false); setIsCreating(false); setCreationType(undefined); setNoteNameInput(""); setFolderNameInput(""); setHasError(false);}}            onClick={() => {setIsCreating(true)}}
-            whileTap={{backgroundColor:"rgb(231, 229, 228)", transition:{duration:0.5}}}
-            className={`mt-5 flex flex-col h-[20%] w-full justify-start items-start ${newNoteCooldown ? 'display-none' : ''}`}>
+            onMouseLeave={() => {setIsHoveringAdd(false); setIsCreating(false); setCreationType(undefined); setNoteNameInput(""); setFolderNameInput(""); setHasError(false);}} onClick={() => {setIsCreating(true)}}
+            className={`outline-none mt-5 flex flex-col h-[20%] w-full justify-start items-start ${newNoteCooldown ? 'display-none' : ''}`}>
               {
                 showNotePlaceholder && !isHoveringAdd ?
                 <EmptyListPlaceholder key="note-placeholder" />:<></>

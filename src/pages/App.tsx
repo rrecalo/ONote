@@ -78,10 +78,10 @@ function App() {
       console.log("successfully logged in as : " + user.email);
       try{
       getUser(user?.email).then(res =>{
-        if(res?.data?.prefs.editorWidth === "full"){
+        if(res?.data?.prefs?.editorWidth === "full"){
           setPreferences({editorWidth: "full", editorPosition: "center"});
         }
-        else if(res?.data?.prefs.editorWidth === "half"){
+        else if(res?.data?.prefs?.editorWidth === "half"){
           setPreferences({editorWidth: "half", editorPosition: "center"});
         }
       });
