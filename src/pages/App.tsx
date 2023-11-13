@@ -16,6 +16,7 @@ import ConfirmDeleteFolderModal from '../Components/ConfirmDeleteFolderModal';
 import { AnimatePresence, motion } from 'framer-motion';
 import NoteComponent from '../Components/NoteComponent';
 import SettingsMenu from '../Components/SettingsMenu';
+import SideMenuButton from '../Components/SideMenuButton';
 
 const placeholderVariants = {
   initial:{
@@ -53,6 +54,26 @@ function App() {
   const [noteNameInputError, setNoteNameInputError] = useState(0);
   const [changesPrompt, setChangesPrompt] = useState(0);
   const [showPlaceholder, setShowPlaceholder] = useState<boolean>(false);
+  const [collapsed, setCollapsed] = useState<boolean>(true);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    // Function to update window width
+    const updateWindowWidth = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    // Event listener to handle window resize
+    window.addEventListener('resize', updateWindowWidth);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', updateWindowWidth);
+    };
+  }, []); // Empty dependency array to run the effect only once on mount
+
+
+
   const navigate = useNavigate();
 
   const changeVariants = {
@@ -565,6 +586,9 @@ function App() {
     
   }
 
+  function toggleCollapsed(){
+    setCollapsed(!collapsed);
+  }
 
   if(!user){
     navigate("/login");
@@ -573,16 +597,27 @@ function App() {
   
   return (
     <div className="App">
+      
+      <SideMenuButton toggleCollapsed={toggleCollapsed} collapsed={collapsed}/>
       <SettingsMenu handlePreferenceChange={handlePreferenceUpdate} preferences={preferences}/>
       <ConfirmDeleteModal showModal={showDeleteNoteModal} closeModal={toggleDeleteModal} deleteNote={handleDeleteNote} workingNoteTitle={workingNote?.title}/>
       <ConfirmDeleteFolderModal showModal={showDeleteFolderModal} closeModal={() => { setFolderToDelete(undefined); setShowDeleteFolderModal(false); } } 
       deleteFolder={handleDeleteFolder} folder={folderToDelete} />
       <div className='flex flex-row justify-start items-start w-full h-[100vh]'>
-        <div className='sm:w-1/4 lg:w-3/12 xl:w-2/12 h-full'>
-          <Sidebar setFolders={setFolders} moveNoteOutOfFolder={moveNoteOutOfFolder}  notes={notes}  renderTopLevelNotes={renderTopLevelNotes} folders={folders} initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}
+        {/* <div className='relative sm:w-1/4 lg:w-3/12 xl:w-2/12 h-full z-20'> */}
+          <AnimatePresence mode="wait">
+
+          {
+            !collapsed || (windowWidth > 640) ?
+          <Sidebar toggleCollapsed={toggleCollapsed} collapsed={collapsed} setFolders={setFolders} moveNoteOutOfFolder={moveNoteOutOfFolder}  notes={notes}  renderTopLevelNotes={renderTopLevelNotes} folders={folders} initializeNewNote={initializeNewNote} renderNoteList={renderNoteList} newNoteCooldown={newNoteCooldown} pref={preferences} handlePref={handlePreferenceUpdate}
           initializeNewFolder={initializeNewFolder} showNotePlaceholder={showPlaceholder}/>
-        </div>
-        {/* ${preferences?.editorWidth  + " " + preferences?.editorPosition} */}
+          :
+          <div key="empty"></div>
+            
+          }
+          </AnimatePresence>
+        {/* </div> */}
+
         <motion.div className={`flex-grow p-2 flex flex-col h-full ${
           (preferences?.editorWidth === "full" ? EditorWidth.full : EditorWidth.half)  + " " + 
           (preferences?.editorPosition === "center" ? EditorPosition.center : EditorPosition.start)}`}>
@@ -597,7 +632,7 @@ function App() {
             :
             <div className='w-full'>
               <input
-              spellCheck={false} className='select-none text-3xl pt-1 outline-none w-full text-stone-950' maxLength={28} value={workingNote?.title} onChange={handleTitleInput}
+              spellCheck={false} className='select-none text-3xl pt-1 outline-none w-fit text-stone-950' maxLength={28} value={workingNote?.title} onChange={handleTitleInput}
               onKeyDown={handleTitleInputKeyPress}/>
               <motion.div 
               className={`text-[0.75rem] h-4 ${noteNameInputError === 1 ? 'text-red-600' : 'text-stone-400'}`}>

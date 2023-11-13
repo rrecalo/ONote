@@ -4,7 +4,7 @@ import {AnimatePresence, motion} from 'framer-motion'
 import SidebarPlaceholder from './Placeholder';
 import EmptyListPlaceholder from './EmptyListPlaceholder';
 
-const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNoteCooldown, handlePref, pref, folders, initializeNewFolder, notes, moveNoteOutOfFolder, setFolders, showNotePlaceholder, ...props}) => {
+const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNoteCooldown, handlePref, pref, folders, initializeNewFolder, notes, moveNoteOutOfFolder, setFolders, showNotePlaceholder, collapsed, toggleCollapsed,...props}) => {
 
 
   const [isHoveringAdd, setIsHoveringAdd] = useState(false);
@@ -22,10 +22,21 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
       const loadingTimeout = setTimeout(()=>{
         setLoading(false);
 
-      }, 500);
+      }, 10);
       return ()=>{clearInterval(loadingTimeout);}
     };
   }, [notes, folders])
+
+  useEffect(()=>{
+    function handleOutsideClick(event){
+      let sidebar = document.getElementById("sidebar");
+      if(event.target !== sidebar){
+        //toggleCollapsed();
+      }
+    }
+    document.addEventListener("click", handleOutsideClick);
+
+  }, [toggleCollapsed])
 
   useEffect(()=>{
     if(confirmAdd){
@@ -87,9 +98,9 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
   }
 
   return (
-    <div id="sidebar" className='select-none w-full h-full outline-none
-    bg-stone-50 flex flex-col justify-start items-center pt-10'>
-
+    <motion.div id="sidebar" key="sidebar" className='absolute sm:relative w-2/3 sm:w-1/4 lg:w-3/12 xl:w-2/12 top-0 left-0 select-none h-full outline-none
+    bg-stone-50 flex flex-col justify-start items-center pt-10 z-20' initial={{x:"-100%"}} animate={{x:0, transition:{type:"tween"}}} exit={{x:"-100%"}}>
+    
           <div id="your-notes-section" className='flex flex-col justify-center items-start gap-0 mt-5 max-w-full w-full outline-none'>
             <div className='flex flex-row items-center text-lg text-stone-800 text-left gap-1 pl-3 outline-none'>
               <div className='font-bold text-xl text-stone-600 outline-none mb-2'>
@@ -217,7 +228,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
                 <></>
             }
           </motion.div>
-        </div>
+        </motion.div>
   )}
 
 export default Sidebar

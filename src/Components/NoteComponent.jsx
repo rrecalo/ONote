@@ -26,7 +26,7 @@ const NoteComponent = ({handleDragStart, handleReorderFolder, workingNote, note,
           <div className='flex justify-center items-center gap -1'>
             <AiOutlineFileText className={`w-4 h-4
             + ${workingNote?._id === note._id ? 'text-stone-950' : 'text-stone-600'}`} />
-            <div className='text-sm'>
+            <div className='text-sm whitespace-normal'>
               {note?.title}
             </div>
           </div>
