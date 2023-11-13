@@ -101,7 +101,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
     <motion.div id="sidebar" key="sidebar" className='absolute sm:relative w-2/3 sm:w-1/4 lg:w-3/12 xl:w-2/12 top-0 left-0 select-none h-full outline-none
     bg-stone-50 flex flex-col justify-start items-center pt-10 z-20' initial={{x:"-100%"}} animate={{x:0, transition:{type:"tween"}}} exit={{x:"-100%"}}>
     
-          <div id="your-notes-section" className='flex flex-col justify-center items-start gap-0 mt-5 max-w-full w-full outline-none'>
+          <div id="your-notes-section" className='flex flex-col justify-center items-start gap-0 mt-8 sm:mt-5 max-w-full w-full outline-none'>
             <div className='flex flex-row items-center text-lg text-stone-800 text-left gap-1 pl-3 outline-none'>
               <div className='font-bold text-xl text-stone-600 outline-none mb-2'>
                 Notes

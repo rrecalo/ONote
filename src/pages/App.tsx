@@ -597,8 +597,6 @@ function App() {
   
   return (
     <div className="App">
-      
-      <SideMenuButton toggleCollapsed={toggleCollapsed} collapsed={collapsed}/>
       <SettingsMenu handlePreferenceChange={handlePreferenceUpdate} preferences={preferences}/>
       <ConfirmDeleteModal showModal={showDeleteNoteModal} closeModal={toggleDeleteModal} deleteNote={handleDeleteNote} workingNoteTitle={workingNote?.title}/>
       <ConfirmDeleteFolderModal showModal={showDeleteFolderModal} closeModal={() => { setFolderToDelete(undefined); setShowDeleteFolderModal(false); } } 
@@ -631,9 +629,12 @@ function App() {
             </div>
             :
             <div className='w-full'>
-              <input
-              spellCheck={false} className='select-none text-3xl pt-1 outline-none w-fit text-stone-950' maxLength={28} value={workingNote?.title} onChange={handleTitleInput}
-              onKeyDown={handleTitleInputKeyPress}/>
+              <div className='flex gap-3 justify-center items-center'>
+              <SideMenuButton toggleCollapsed={toggleCollapsed} collapsed={collapsed}/>
+                <input
+                spellCheck={false} className='select-none text-3xl pt-1 outline-none w-fit text-stone-950' maxLength={28} value={workingNote?.title} onChange={handleTitleInput}
+                onKeyDown={handleTitleInputKeyPress}/>
+              </div>
               <motion.div 
               className={`text-[0.75rem] h-4 ${noteNameInputError === 1 ? 'text-red-600' : 'text-stone-400'}`}>
               {

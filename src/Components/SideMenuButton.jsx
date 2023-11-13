@@ -3,8 +3,8 @@ import {GiHamburgerMenu} from 'react-icons/gi'
 
 function SideMenuButton({toggleCollapsed, collapsed}) {
   return (
-    <div className='absolute top-3 left-3 block sm:hidden z-30'>
-        <GiHamburgerMenu className='w-5 h-5' onClick={toggleCollapsed}/>
+    <div className='block top-3 left-3 sm:hidden z-30 p-1'>
+        <GiHamburgerMenu className='w-6 h-6' onClick={toggleCollapsed}/>
     </div>
   )
 }
