@@ -36,7 +36,7 @@ root.render(
     domain="notes158694.us.auth0.com"
     clientId="JTgCuc1CydAfp31fjwR0Lr9WEX6WWdGV"
     authorizationParams={{
-      redirect_uri: "http://localhost:3000/app"
+      redirect_uri: "http://onote.cloud/app"
     }}>
       <RouterProvider router={router} />
   </Auth0Provider>
