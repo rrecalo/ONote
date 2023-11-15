@@ -1,10 +1,7 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './pages/App';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
-import { Provider } from 'react-redux'
-import store from './store'
 import Login from './pages/Login';
 import {
   createBrowserRouter,
@@ -39,7 +36,7 @@ root.render(
     domain="notes158694.us.auth0.com"
     clientId="JTgCuc1CydAfp31fjwR0Lr9WEX6WWdGV"
     authorizationParams={{
-      redirect_uri: "https://onote.cloud/app"
+      redirect_uri: process.env.REACT_APP_REDIRECT_URI
     }}>
       <RouterProvider router={router} />
   </Auth0Provider>

@@ -1,3 +1,6 @@
+*{
+    user-select: auto !important;
+}
 #toolbar.ql-toolbar.ql-snow{
     border:none;
 }
