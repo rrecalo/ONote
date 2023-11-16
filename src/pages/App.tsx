@@ -2,7 +2,7 @@ import React , {useEffect, useState} from 'react';
 import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import TextEditor from '../Components/TextEditor';
-import {getUserNotes, createNote, deleteNote, saveFolderName, saveFolderState, createFolder, deleteFolder, updateUserFolders, updateUserPrefs, getUser, updateUserLastNote} from '../api/userAPI';
+import {getUserNotes, createNote, deleteNote, saveFolderState, createFolder, deleteFolder, updateUserFolders, updateUserPrefs, getUser, updateUserLastNote } from '../api/userAPI';
 import { Note } from '../types/Note'
 import { updateNote } from '../api/userAPI';
 import {AiOutlineCheck, } from 'react-icons/ai';
@@ -271,7 +271,7 @@ function App() {
       folderToUpdate.name = newName;
       setFolders(updatedFolders);
       //store in DB
-      saveFolderName(user?.email, folderToUpdate);
+      saveFolderState(user?.email, folderToUpdate);
     }
   }
 
@@ -297,7 +297,7 @@ function App() {
         createNote(user.email, noteName || "", "").then((response: any) => 
         { 
           //add it to the notes state, and THEN set it as the working note!
-          setNotes(notes => [...notes, response?.data.newNote as Note]);
+          setNotes(notes => [...notes, response?.data as Note]);
           setWorkingNote(response?.data.newNote as Note);
           refreshNoteList(false);
           setNewNoteCooldown(true);
@@ -313,9 +313,9 @@ function App() {
   function initializeNewFolder(folderName : string){
     if(user?.email){
       console.log("New folder!");
-      createFolder(user.email, folderName).then((response: any) => 
+      createFolder(user.email, folderName, folders.length).then((response: any) => 
       { 
-        const newFolderObject : Folder = {_id: response.data.insertedId, name: response.data.folderName, order: response.data.index, opened: response.data.opened};
+        const newFolderObject : Folder = response.data as Folder;
         setFolders(folders => [...folders, newFolderObject]
           .sort((a : Folder, b : Folder) => a.order - b.order ));
       });
@@ -484,7 +484,7 @@ function App() {
 
   function handleDeleteNote(){
     if(workingNote){
-      deleteNote(workingNote as Note, user?.email).then(res=>console.log(res.data?.success));
+      deleteNote(workingNote as Note, user?.email).then(res=>console.log(res.data ? "note removed." : "removal could not be completed!"));
       setNotes(notes => notes.filter(note => note._id !== workingNote?._id));
       setDisableDelete(true);
       setShowDeleteNoteModal(false);

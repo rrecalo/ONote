@@ -103,8 +103,8 @@ useEffect(()=>{
       {
       loading ?
       <>
-        <SidebarPlaceholder />
-        <SidebarPlaceholder />
+        <SidebarPlaceholder key="placeholder1"/>
+        <SidebarPlaceholder key="placeholder2"/>
       </>
       :
         <>

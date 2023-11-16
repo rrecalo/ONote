@@ -113,7 +113,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
           <SidebarPlaceholder/>: 
           <>
           {renderNoteList(folders)}
-          <hr className='border-0 my-1'/>
+          <hr className='border-0 my-1' key="hr"/>
           {renderTopLevelNotes(notes)}
           </>
           }
