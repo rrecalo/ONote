@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import EditorToolbar, {modules, formats} from './EditorToolbar.jsx'
 import 'react-quill/dist/quill.snow.css';
 import {motion, AnimatePresence} from 'framer-motion'
 import './TextEditor.css'
-import SidebarPlaceholder, { placeholderVariants } from './Placeholder.jsx';
+import SidebarPlaceholder from './Placeholder.jsx';
 
 function TextEditor({noteId, getNoteById, updateNoteContent, setChangesPrompt, saveNoteContent, ...props}) {
 
@@ -92,11 +92,13 @@ useEffect(()=>{
     
     setNoteChanged(true);
     CancelTimer();
-    if(noteId && !loading){
-      setValue(getNoteById(noteId)?.text);
+    if(noteId){
+      setValue(getNoteById(noteId)?.text || "");
     }
     
   }, [noteId])
+
+
 
   return (
     <motion.div className="text-editor"
