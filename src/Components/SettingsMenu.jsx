@@ -7,26 +7,33 @@ import { useAuth0 } from '@auth0/auth0-react'
 
 const SettingsMenu = ({preferences, handlePreferenceChange}) => {
 
-    const [fullWidth, setFullWidth] = useState();
-    const [centered, setCentered] = useState();
+    const [fullWidth, setFullWidth] = useState("");
+    const [centered, setCentered] = useState("");
     const [open, setOpen] = useState(false);
     const modalRef = useRef(null);
     const { user, logout } = useAuth0();
+    const [loaded, setLoaded] = useState(false);
 
     useEffect(()=>{
-        if(preferences?.editorWidth){
+        if(preferences){
+            if(fullWidth !== preferences?.editorWidth && fullWidth !== ""){
+            
             setFullWidth(preferences?.editorWidth === "full" ? true : false);
             setCentered(preferences?.editorWidth === "full" ? true : false);
+            }
         }
     }, [preferences])
 
     useEffect(()=>{
+        if(loaded){
         if(fullWidth !== undefined && fullWidth !== null){
         handlePreferenceChange({
             editorWidth: fullWidth ? "full" : "half",
             editorPosition: "center"
         });
         }
+        }
+        else setLoaded(true);
     }, [fullWidth]);
 
 

@@ -77,7 +77,6 @@ useEffect(()=>{
   };
 
   useEffect(()=>{
-    console.log("value useEffect triggered");
     if(!noteChanged){
     if(value !== null && value !== undefined){
       StartTimer(3);
