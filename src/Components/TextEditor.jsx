@@ -13,6 +13,7 @@ function TextEditor({noteId, getNoteById, updateNoteContent, setChangesPrompt, s
   const [countdown, setCountdown] = useState(0);
   const [noteChanged, setNoteChanged] = useState(true);
   const [loading, setLoading] = useState(true);
+  //const [noteChanged, setNoteChanged] = useState(true);
 
   useEffect(()=>{
     if(noteId){
@@ -22,7 +23,7 @@ function TextEditor({noteId, getNoteById, updateNoteContent, setChangesPrompt, s
       }, 500);
       return ()=>{clearInterval(loadingTimeout);}
     }
-    if(!noteId){
+    else{
       setLoading(true);
     }
   }, [noteId])
@@ -76,19 +77,24 @@ useEffect(()=>{
   };
 
   useEffect(()=>{
-    if(value !== null && value !== undefined && !noteChanged){
+    console.log("value useEffect triggered");
+    if(!noteChanged){
+    if(value !== null && value !== undefined){
       StartTimer(3);
       
       //updateNoteContent(noteId, value);
     }
-    setNoteChanged(false);
+    }
+      else setNoteChanged(false)
+
   },[value])
 
   useEffect(()=>{
+    
+    setNoteChanged(true);
     CancelTimer();
-    if(noteId){
+    if(noteId && !loading){
       setValue(getNoteById(noteId)?.text);
-      setNoteChanged(true);
     }
     
   }, [noteId])
