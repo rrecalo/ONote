@@ -14,6 +14,7 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
   const myInputRef = useRef(null);
   const [expanded, setExpanded] = useState(folder.opened);
   const [inputError, setInputError] = useState("");
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(()=>{
     const changeFolderNameInterval = setTimeout(()=>{
@@ -55,8 +56,11 @@ const FolderComponent = ({folder, notes, updateFolderName, moveNoteToFolder, tog
 
 
   useEffect(()=>{
-    if(expanded !== undefined && expanded !== null)
+    if(loaded){
+    if(expanded !== undefined && expanded !== null && loaded)
       updateFolderState(folder, expanded);
+    }
+    else setLoaded(true);
   }, [expanded])
 
   function changeFolderName(){
