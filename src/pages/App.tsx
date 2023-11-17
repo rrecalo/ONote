@@ -616,7 +616,7 @@ function App() {
           </AnimatePresence>
         {/* </div> */}
 
-        <motion.div className={`flex-grow p-2 flex flex-col h-full ${
+        <motion.div className={`flex-grow p-2 flex flex-col h-full w-fit ${
           (preferences?.editorWidth === "full" ? EditorWidth.full : EditorWidth.half)  + " " + 
           (preferences?.editorPosition === "center" ? EditorPosition.center : EditorPosition.start)}`}>
           <motion.div className='flex justify-between items-center gap-3 mt-5 ml-2 pe-5 bg-transparent w-11/12'
@@ -629,10 +629,10 @@ function App() {
             </div>
             :
             <div className='w-full'>
-              <div className='flex gap-3 justify-center items-center'>
+              <div className='flex sm:flex-row flex-col gap-3 justify-start items-center'>
               <SideMenuButton toggleCollapsed={toggleCollapsed} collapsed={collapsed}/>
                 <input
-                spellCheck={false} className='select-none text-3xl pt-1 outline-none w-fit text-stone-950' maxLength={28} value={workingNote?.title} onChange={handleTitleInput}
+                spellCheck={false} className='select-none text-3xl pt-1 outline-none w-fit text-stone-950 pl-8 sm:pl-0' maxLength={28} value={workingNote?.title} onChange={handleTitleInput}
                 onKeyDown={handleTitleInputKeyPress}/>
               </div>
               <motion.div 
