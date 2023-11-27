@@ -215,7 +215,7 @@ const Sidebar = ({initializeNewNote, renderTopLevelNotes, renderNoteList, newNot
                     animate={{x:5, opacity:1, transition:{duration:0.5}}}
                     exit={{x:125, opacity:0}} transition={{duration:0.5}}>
                       <AiOutlinePlus className='w-3 h-3 text-stone-600'/>
-                      create new
+                      click to create new
                     </motion.div>
                      :
                      <></>

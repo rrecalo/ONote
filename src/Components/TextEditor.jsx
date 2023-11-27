@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import ReactQuill from 'react-quill';
 import EditorToolbar, {modules, formats} from './EditorToolbar.jsx'
 import 'react-quill/dist/quill.snow.css';
 import {motion, AnimatePresence} from 'framer-motion'
 import './TextEditor.css'
-import SidebarPlaceholder from './Placeholder.jsx';
+import Placeholder from './Placeholder.jsx';
 
 function TextEditor({noteId, getNoteById, updateNoteContent, setChangesPrompt, saveNoteContent, ...props}) {
 
+  const {user} = useAuth0();
   const [value, setValue] = useState(null);
   const [timer, setTimer] = useState(null);
   const [countdown, setCountdown] = useState(0);
@@ -107,13 +109,19 @@ useEffect(()=>{
     animate={{opacity:1, y:0}}
     transition={{duration:0.35}}>
       <AnimatePresence mode='wait'>
+      {/* animate={{opacity:[1, 1], x:[0, 25, 0], transition:{repeat:Infinity, repeatType:"reverse", repeatDelay:2, duration:0.5}}} */}
       {
-      loading ?
+      loading  && user?
       <>
-        <SidebarPlaceholder key="placeholder1"/>
-        <SidebarPlaceholder key="placeholder2"/>
+        <motion.div
+          className='font-light text-stone-600 pl-5'
+          initial={{opacity:0, x:0}}
+          animate={{opacity:1, x:25, transition:{repeat:Infinity, repeatType:"loop", repeatDelay:5, duration:1, delay:2}}}>
+            You've got no notes - make one using the sidebar
+        </motion.div>
       </>
       :
+        noteId? 
         <>
         <EditorToolbar key="editor_toolbar"/>
         <ReactQuill
@@ -126,6 +134,8 @@ useEffect(()=>{
           formats={formats}
         />
         </>
+        :
+        <Placeholder />
       }
       </AnimatePresence>
     </motion.div>

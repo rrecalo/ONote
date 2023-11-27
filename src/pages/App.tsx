@@ -164,6 +164,7 @@ function App() {
     }
     if(notes.length > 0 ){
       setShowPlaceholder(false);
+      setLoading(false);
     }
   }, [notes])
 
