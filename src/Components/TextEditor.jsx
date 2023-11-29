@@ -18,10 +18,18 @@ function TextEditor({noteId, getNoteById, updateNoteContent, setChangesPrompt, s
   //const [noteChanged, setNoteChanged] = useState(true);
 
   useEffect(()=>{
+   
+  }, []);
+
+  useEffect(()=>{
     if(noteId){
       const loadingTimeout = setTimeout(()=>{
         setLoading(false);
-
+        const source = new EventSource('http://localhost:3001/collaborate/'+noteId);
+        source.onmessage = function (event){
+            console.log('Received SSE:', event.data);
+            setValue(event.data);
+        }
       }, 500);
       return ()=>{clearInterval(loadingTimeout);}
     }
