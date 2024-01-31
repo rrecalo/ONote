@@ -3,6 +3,7 @@ import './index.css';
 import App from './pages/App';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import Login from './pages/Login';
+import Landing from './pages/Landing';
 import {
   createBrowserRouter,
   RouterProvider,
@@ -22,8 +23,12 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   {
+    path: "/landing",
+    element: <Landing />
+  },
+  {
     path: "/",
-    element: <Login />,
+    element: <Landing />,
   },
   {
     path: "/*",
