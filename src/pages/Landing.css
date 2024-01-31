@@ -2,5 +2,5 @@
 *{
     caret-color :#a1a1aa;
     font-family: 'Lato';
-    user-select: none;
+    user-select: none !important;
 }
