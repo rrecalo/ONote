@@ -32,7 +32,7 @@ function Landing(){
     return (
     <div className='w-full h-full min-h-[100vh] m-0 p-0 bg-stone-50'>
         <div className="w-full sm:w-3/4 mx-auto">
-            <div className="w-full text-center mt-10">
+            <div className="w-full text-center pt-10">
                 <motion.div className='w-5/6 sm:w-1/2 mx-auto flex justify-between'
                 initial={{opacity:0, y:-3}} animate={{opacity:1, y:0}} transition={{delay:1, duration:0.5}}>
                     <motion.a target="_blank" href="https://github.com/rrecalo/ONote"
