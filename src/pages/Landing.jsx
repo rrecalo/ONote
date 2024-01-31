@@ -13,12 +13,12 @@ function Landing(){
     }
 
     const button = {
-        initial:{},
+        initial:{x:-10},
         animate: {
             x:0,
             //backgroundColor: "rgba(255,255,255,0)",
             //color:"#292524",
-            transition:{type:"linear" , duration:0.25}
+            transition:{type:"linear" , duration:0.5}
 
         },
         whileHover: {
@@ -36,7 +36,8 @@ function Landing(){
                 
             </div>
             <div className="w-full text-center">
-                <div className='w-1/2 mx-auto flex justify-between'>
+                <motion.div className='w-1/2 mx-auto flex justify-between'
+                initial={{opacity:0, y:-3}} animate={{opacity:1, y:0}} transition={{delay:1, duration:0.5}}>
                     <motion.a target="_blank" href="https://github.com/rrecalo/ONote"
                     className='text-md p-3 rounded-lg block w-fit text-stone-700'
                     animate={{y:0}} whileHover={{y:-3}}>
@@ -53,19 +54,22 @@ function Landing(){
                         </div>
                         {/*<MdOutlineArrowForward className='inline-block'/>*/}
                     </motion.a>
-                </div>
-                <motion.div className='text-6xl align-center text-stone-800 mt-10 mb-2'>
+                </motion.div>
+                <motion.div className='text-6xl align-center text-stone-800 mt-10 mb-2'
+                initial={{opacity:0}} animate={{opacity:1}} transition={{duration:0.25}}        
+                >
                     <BsTextParagraph className='text-6xl inline-block'/>
                     <div className='inline-block font-[400] text-stone-800 transform translate-y-1'>
                         ONote
                     </div>
                 </motion.div>
-                <motion.span className='text-2xl font-light text-stone-800 text-center w-full'>
+                <motion.span className='text-2xl font-light text-stone-800 text-center w-full'
+                initial={{opacity:0}} animate={{opacity:1}} transition={{duration:0.4}}>
                     A fuss-free cloud solution for your note-taking woes
                 </motion.span>
                 
                 <motion.div className="cursor-pointer w-fit h-fit text-md p-2.5 px-4 mt-5 mx-auto
-                bg-stone-900 text-stone-50 rounded-md" variants={button} animate="animate" whileHover="whileHover"
+                bg-stone-900 text-stone-50 rounded-md" variants={button} initial="initial" animate="animate" whileHover="whileHover"
                 onClick={handleCallToActionClick}>  
                     Get Started
                     <MdOutlineArrowForward className='ml-2 inline-block'/>
