@@ -1,7 +1,7 @@
 <p align="center">
   <p align="center">
   </p>
-	<h1 align="center"><b><a href="https://onote.cloud)">ONote.cloud</a></b></h1>
+	<h1 align="center"><b><a href="https://onote.cloud">ONote.cloud</a></b> (inactive) </h1>
  <p align="center">
    <img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fwww.ifhomeimpro.com&up_message=live&label=production">
    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/rrecalo/ONote"/>
